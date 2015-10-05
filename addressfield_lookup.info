@@ -1,0 +1,10 @@
+name = Address Field Lookup
+description = Provides an abstracted API for providing address field lookup services.
+package = Address Field Lookup
+core = 7.x
+configure = admin/config/regional/addressfield-lookup
+
+files[] = addressfield_lookup.interface.inc
+
+dependencies[] = addressfield
+dependencies[] = ctools

@@ -7,7 +7,7 @@
 
 $plugin = array(
   'title' => t('Address Field Lookup'),
-  'format callback' => 'addressfield_format_address_lookup_generate',
+  'format callback' => 'addressfield_lookup_addressfield_format_generate',
   'type' => 'address',
   'weight' => 10,
 );
@@ -17,7 +17,7 @@ $plugin = array(
  *
  * @see CALLBACK_addressfield_format_callback()
  */
-function addressfield_format_address_lookup_generate(&$format, &$address, $context = array()) {
+function addressfield_lookup_addressfield_format_generate(&$format, &$address, $context = array()) {
   // Only run in when the address field form is shown.
   if ($context['mode'] == 'form') {
     // Check there is a default 'address field lookup service'.

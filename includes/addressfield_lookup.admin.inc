@@ -151,6 +151,10 @@ function addressfield_lookup_services_test_default_service($form, &$form_state) 
   if ($test_addresses = addressfield_lookup_get_addresses($addressfield_lookup_default_service['test data'], TRUE, TRUE)) {
     // Run secondary test to get the full details of the 1st result.
     if ($test_address_details = addressfield_lookup_get_address_details($test_addresses[0]['id'], TRUE, TRUE)) {
+      // Tidy up.
+      unset($test_addresses);
+      unset($test_address_details);
+
       // The test passed.
       drupal_set_message(t('The default service (%service_name) test was successful.', array('%service_name' => $addressfield_lookup_default_service['name'])));
       return TRUE;

@@ -113,7 +113,7 @@ class PostcodeAnywhere implements AddressFieldLookupInterface {
     $valid_formats = array();
 
     // Loop through the endpoints.
-    foreach ($this->endpoints as $endpoint_name => $formats) {
+    foreach ($this->endpoints as $formats) {
       foreach ($formats as $format => $url) {
         // Add to the valid format list.
         if (!in_array($format, $valid_formats)) {

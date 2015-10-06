@@ -9,10 +9,10 @@ provide postcode lookup functionality based on the default lookup service.
 # Address Field Lookup Services
 
 Address Field Lookup services can be defined through the module API, the main
-entry point for this being hook_addressfield_lookup_service_info. Documentation can
-be found in addressfield_lookup.api.php. Each service needs to provide its own
-handler class which implements the AddressFieldLookupInterface defined within
-this module.
+entry point for this being hook_addressfield_lookup_service_info. Documentation
+can be found in addressfield_lookup.api.php. Each service needs to provide its
+own handler class which implements the AddressFieldLookupInterface defined
+within this module.
 
 Each service is required to provide its own configuration interface via the
 form API. The actual details of the configuration can be fully bespoke to the
@@ -37,7 +37,8 @@ This configuration page will allow to view all currently available address
 lookup services. You can choose the default service and configure each of the
 services individually.
 
-All addressfield instances will have an 'Address Field Lookup' handler available.
+All addressfield instances will have an 'Address Field Lookup' handler
+available.
 
 # Acknowledgements
 

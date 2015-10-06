@@ -9,17 +9,17 @@
  * Form builder: PostcodeAnywhere address field lookup service configuration.
  */
 function addressfield_lookup_postcodeanywhere_config_form() {
-  $form['postcodeanywhere_login'] = array(
+  $form['addressfield_lookup_postcodeanywhere_login'] = array(
     '#title' => t('Login'),
     '#type' => 'textfield',
-    '#default_value' => variable_get('postcodeanywhere_login', NULL),
+    '#default_value' => variable_get('addressfield_lookup_postcodeanywhere_login', NULL),
     '#description' => t('Login code you have for Postcode Anywhere.'),
   );
 
-  $form['postcodeanywhere_license'] = array(
+  $form['addressfield_lookup_postcodeanywhere_license'] = array(
     '#title' => t('License'),
     '#type' => 'textfield',
-    '#default_value' => variable_get('postcodeanywhere_license', NULL),
+    '#default_value' => variable_get('addressfield_lookup_postcodeanywhere_license', NULL),
     '#description' => t('License code you have for Postcode Anywhere.'),
   );
 

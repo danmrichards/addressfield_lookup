@@ -14,7 +14,7 @@ function addressfield_lookup_help($path, $arg) {
   switch ($path) {
     case 'admin/help#addressfield_lookup':
       $output = '<h2>' . t('Address Field Lookup') . '</h2>';
-      $output .= '<p>' . t("The module provides provides an abstracted API for providing address field lookup services. Other modules can define their own services which are configurable from this module.") . '<p>';
+      $output .= '<p>' . t("The module provides an abstracted API for providing address field lookup services. Other modules can define their own services which are configurable from this module.") . '<p>';
 
       return $output;
 

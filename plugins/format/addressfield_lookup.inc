@@ -212,12 +212,12 @@ function addressfield_lookup_addressfield_house_number_validate($element, &$form
     // Get the matching addresses.
     $addresses = addressfield_lookup_get_addresses($address['addressfield_lookup_postal_code']);
 
-    // Prepare list options from the lookup results.
-    $address_options = _addressfield_lookup_prepare_options($addresses);
-
     // Only validate if there are addresses.
     if (!empty($addresses)) {
       $validate = FALSE;
+
+      // Prepare list options from the lookup results.
+      $address_options = _addressfield_lookup_prepare_options($addresses);
 
       // Search in addresses for the house number data and return the first
       // matched address.

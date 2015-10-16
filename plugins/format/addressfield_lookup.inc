@@ -286,8 +286,10 @@ function addressfield_lookup_addressfield_postal_code_validate($element, &$form_
 
         // Set the address values on the form.
         foreach ($address as $key => $value) {
-          // Form state for addressfield in custom forms,
-          // ex. Drupal commerce checkout form.
+          // Update the form state for addressfield.
+          // Note: form_state['input'] must be updated so that
+          // addressfield_lookup_addressfield_format_generate() has correct
+          // information during the rebuild.
           drupal_array_set_nested_value($form_state['values'], array_merge($array_parents, array($key)), $value, TRUE);
           drupal_array_set_nested_value($form_state['input'], array_merge($array_parents, array($key)), $value, TRUE);
         }
@@ -321,6 +323,10 @@ function addressfield_lookup_addressfield_cancel_search_validate($element, &$for
     $form_state['addressfield'][$address['element_key']] = array_diff_key($address, array('element_key' => ''));
     $form_state['addressfield'][$address['element_key']]['addressfield_lookup_mode'] = 'cancel';
 
+    // Update the form state for addressfield.
+    // Note: form_state['input'] must be updated so that
+    // addressfield_lookup_addressfield_format_generate() has correct
+    // information during the rebuild.
     drupal_array_set_nested_value($form_state['values'], array_merge($array_parents, array('addressfield_lookup_mode')), 'cancel', TRUE);
     drupal_array_set_nested_value($form_state['input'], array_merge($array_parents, array('addressfield_lookup_mode')), 'cancel', TRUE);
 
@@ -347,6 +353,10 @@ function addressfield_lookup_addressfield_search_by_postal_code_validate($elemen
     $form_state['addressfield'][$address['element_key']]['addressfield_lookup_addresses'] = NULL;
     $form_state['addressfield'][$address['element_key']]['addressfield_lookup_mode'] = 'search';
 
+    // Update the form state for addressfield.
+    // Note: form_state['input'] must be updated so that
+    // addressfield_lookup_addressfield_format_generate() has correct
+    // information during the rebuild.
     drupal_array_set_nested_value($form_state['values'], array_merge($array_parents, array('addressfield_lookup_mode')), 'search', TRUE);
     drupal_array_set_nested_value($form_state['input'], array_merge($array_parents, array('addressfield_lookup_mode')), 'search', TRUE);
 

@@ -16,7 +16,7 @@
  * @see http://www.pcapredict.com/support/webservice/postcodeanywhere/interactive/find/1.1/
  * @see https://github.com/bensquire/postcodeanywhere-php-api.
  */
-class PostcodeAnywhere implements AddressFieldLookupInterface {
+class AddressFieldLookupPostcodeAnywhere implements AddressFieldLookupInterface {
   // Multi-dimensional array of endpoints. Firstly keyed by the name of the
   // endpoint and then keyed by the return data format.
   protected $endpoints = array(

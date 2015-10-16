@@ -12,12 +12,12 @@ POSTCODEANYWHERE INTERACTIVE FIND (V1.10)
 -----------------------------------------
 Documentation can be found here:
 
-http://www.pcapredict.com/support/webservice/postcodeanywhere/interactive/find/1.1/
+http://www.pcapredict.com/support/webservice/serviceslist/postcodeanywhere
 
 The following formats are supported:
 
-* JSON (http://services.postcodeanywhere.co.uk/PostcodeAnywhere/Interactive/Find/v1.10/json.ws)
-* XMLA (http://services.postcodeanywhere.co.uk/PostcodeAnywhere/Interactive/Find/v1.10/xmla.ws)
+* JSON
+* XMLA
 
 REQUIREMENTS
 ------------

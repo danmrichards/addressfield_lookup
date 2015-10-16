@@ -510,7 +510,7 @@ function _addressfield_lookup_populate_addressfield($address_id, $element, &$for
       // Set the address ID value on the form.
       $address['addressfield_lookup_addresses_select'] = $address_id;
 
-      // Set the mode based on presence of the houser number.
+      // Set the mode based on presence of the house number.
       if (!empty($address['addressfield_lookup_house_number'])) {
         $address['addressfield_lookup_mode'] = 'address_selected';
       }
@@ -523,8 +523,10 @@ function _addressfield_lookup_populate_addressfield($address_id, $element, &$for
 
       // Set the address values on the form.
       foreach ($address as $key => $value) {
-        // Form state for addressfield in custom forms,
-        // ex. Drupal commerce checkout form.
+        // Update the form state for addressfield.
+        // Note: form_state['input'] must be updated so that
+        // addressfield_lookup_addressfield_format_generate() has correct
+        // information during the rebuild.
         drupal_array_set_nested_value($form_state['values'], array_merge($array_parents, array($key)), $value, TRUE);
         drupal_array_set_nested_value($form_state['input'], array_merge($array_parents, array($key)), $value, TRUE);
       }

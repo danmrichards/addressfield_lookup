@@ -40,10 +40,28 @@ CONFIGURATION
 -------------
 Configuration is provided by the Address Field Lookup module itself. Once this
 sub-module is enabled you should see a new entry for Postcode Anywhere on the
-overview page - admin/config/regional/addressfield-lookup.
+overview page.
 
-From here you can click the 'configure' link which will take you to a form where
-you can enter the API key and login for Postcode Anywhere.
+Firstly you need to ensure you have an API key for Postcode Anywhere, to do this
+follow these steps:
+
+* Sign up for an account with PCA Predict at this URL
+  https://www.pcapredict.com/register/
+* Once logged in to your account go to the control panel and click the button
+  labelled 'New Service' (https://account.pcapredict.com/#/newservice/)
+* Scroll down and choose the 'API Key' option by clicking the 'Create' button.
+* You should now have an API key in your 'All Services' panel, copy it.
+
+Now you can navigate to the module configiguration page at the following URL:
+
+admin/config/regional/addressfield-lookup
+
+From here you can click the 'configure' link next to 'Postcode Anywhere' which
+will take you to a form where you can configure the Postcode Anywhere
+integration. Paste the API key you copied earlier into the 'Licence' field.
+
+The additional field for 'Login' is optional and only required for a
+Royal Mail licence.
 
 MAINTAINERS
 -----------

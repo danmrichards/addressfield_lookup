@@ -13,14 +13,14 @@ function addressfield_lookup_postcodeanywhere_config_form() {
     '#title' => t('Login'),
     '#type' => 'textfield',
     '#default_value' => variable_get('addressfield_lookup_postcodeanywhere_login', NULL),
-    '#description' => t('Login code you have for Postcode Anywhere.'),
+    '#description' => t('The login associated with the Royal Mail license (not required for click licenses).'),
   );
 
   $form['addressfield_lookup_postcodeanywhere_license'] = array(
     '#title' => t('License'),
     '#type' => 'textfield',
     '#default_value' => variable_get('addressfield_lookup_postcodeanywhere_license', NULL),
-    '#description' => t('License code you have for Postcode Anywhere.'),
+    '#description' => t('API key to use to authenticate to Postcode Anywhere.'),
   );
 
   // Add a custom submit function.

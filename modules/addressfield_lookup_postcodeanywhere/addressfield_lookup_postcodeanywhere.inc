@@ -382,6 +382,11 @@ class AddressFieldLookupPostcodeAnywhere implements AddressFieldLookupInterface 
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
     curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 
+    // Add a CA certificate check if we're using HTTPS.
+    if ($this->https) {
+      curl_setopt($ch, CURLOPT_CAINFO, dirname(__FILE__) . '/includes/cacert.pem');
+    }
+
     // Get the API response.
     $api_response = curl_exec($ch);
 

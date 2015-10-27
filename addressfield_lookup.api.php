@@ -77,7 +77,7 @@ function hook_addressfield_lookup_get_service_object($class) {
  */
 function hook_addressfield_lookup_postcode_alter(&$post_code) {
   // Strip out spaces and force uppercase.
-  $post_code = strtoupper(preg_replace('/\s/si', '', $post_code));
+  $post_code = drupal_strtoupper(preg_replace('/\s/si', '', $post_code));
 }
 
 /**

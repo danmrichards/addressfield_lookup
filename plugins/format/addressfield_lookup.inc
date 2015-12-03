@@ -189,14 +189,14 @@ function addressfield_lookup_addressfield_format_generate(&$format, &$address, $
           '#weight' => $format['country']['#weight'] + 3,
         );
       }
-
-      // Get any format updates from the default address lookup service.
-      addressfield_lookup_get_format_updates($format, $address);
     }
     else {
       watchdog('addressfield_lookup', 'Address field lookup handler could not initialise as there are no available lookup services.', array(), WATCHDOG_WARNING);
     }
   }
+
+  // Get any format updates from the default address lookup service.
+  addressfield_lookup_get_format_updates($format, $address);
 }
 
 /**

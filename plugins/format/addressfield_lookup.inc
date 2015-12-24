@@ -286,8 +286,10 @@ function addressfield_lookup_addressfield_postal_code_validate($element, &$form_
         $address['postal_code'] = isset($first_address_details['postal_code']) ? $first_address_details['postal_code'] : '';
         $address['administrative_area'] = isset($first_address_details['administrative_area']) ? $first_address_details['administrative_area'] : '';
 
-        // Form state for addressfield format.
-        $form_state['addressfield'][$address['element_key']] = array_diff_key($address, array('element_key' => ''));
+        // Update the form state, where possible.
+        if (isset($address['element_key']) && isset($form_state['addressfield'][$address['element_key']])) {
+          $form_state['addressfield'][$address['element_key']] = array_diff_key($address, array('element_key' => ''));
+        }
 
         // Set the address values on the form.
         foreach ($address as $key => $value) {
@@ -325,8 +327,12 @@ function addressfield_lookup_addressfield_cancel_search_validate($element, &$for
 
     // Set the mode.
     $address['addressfield_lookup_mode'] = 'cancel';
-    $form_state['addressfield'][$address['element_key']] = array_diff_key($address, array('element_key' => ''));
-    $form_state['addressfield'][$address['element_key']]['addressfield_lookup_mode'] = 'cancel';
+
+    // Update the form state, where possible.
+    if (isset($address['element_key']) && isset($form_state['addressfield'][$address['element_key']])) {
+      $form_state['addressfield'][$address['element_key']] = array_diff_key($address, array('element_key' => ''));
+      $form_state['addressfield'][$address['element_key']]['addressfield_lookup_mode'] = 'cancel';
+    }
 
     // Update the form state for addressfield.
     // Note: form_state['input'] must be updated so that

@@ -518,8 +518,10 @@ function _addressfield_lookup_populate_addressfield($address_id, $element, &$for
         $address['addressfield_lookup_mode'] = 'address_selection';
       }
 
-      // Form state for addressfield format.
-      $form_state['addressfield'][$address['element_key']] = array_diff_key($address, array('element_key' => ''));
+      // Update the form state, where possible.
+      if (isset($address['element_key']) && isset($form_state['addressfield'][$address['element_key']])) {
+        $form_state['addressfield'][$address['element_key']] = array_diff_key($address, array('element_key' => ''));
+      }
 
       // Set the address values on the form.
       foreach ($address as $key => $value) {

@@ -23,7 +23,7 @@ function addressfield_lookup_services_overview_form() {
     foreach ($addressfield_lookup_services as $machine_name => $addressfield_lookup_service) {
       // Add the service name.
       $form['services'][$machine_name] = array(
-        '#markup' => check_plain($addressfield_lookup_service['name']) . ' <small> (Machine name: ' . check_plain($machine_name) . ')</small>',
+        '#markup' => t('@service_name <small> (Machine name: @service_machine_name)</small>', array('@service_name' => $addressfield_lookup_service['name'], '@service_machine_name' => $machine_name)),
       );
 
       // Add the config path (if present).

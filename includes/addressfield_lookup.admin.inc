@@ -190,6 +190,7 @@ function addressfield_lookup_settings_form($form, &$form_state) {
     '#title' => t('Cache length'),
     '#default_value' => variable_get('addressfield_lookup_cache_length', ADDRESSFIELD_LOOKUP_CACHE_LENGTH),
     '#description' => t('Length (in seconds) to keep address details in the cache.'),
+    '#element_validate' => array('element_validate_integer_positive'),
   );
 
   return system_settings_form($form);

@@ -204,7 +204,17 @@ function addressfield_lookup_get_default_service() {
       $default_service_name = key($addressfield_lookup_services);
     }
 
-    $addressfield_lookup_default_service = isset($addressfield_lookup_services[$default_service_name]) ? $addressfield_lookup_services[$default_service_name] : NULL;
+    try {
+      // Check we have a default service, and it can be instantiated.
+      if (isset($addressfield_lookup_services[$default_service_name])) {
+        $addressfield_lookup_default_service = $addressfield_lookup_services[$default_service_name];
+        $addressfield_lookup_default_service_object = module_invoke($addressfield_lookup_default_service['module'], 'addressfield_lookup_get_service_object', $addressfield_lookup_default_service['class']);
+      }
+    }
+    catch (Exception $e) {
+      watchdog('addressfield_lookup', 'Default Address Lookup service could not be instantiated.', array(), WATCHDOG_ERROR);
+      $addressfield_lookup_default_service = FALSE;
+    }
   }
 
   return $addressfield_lookup_default_service;

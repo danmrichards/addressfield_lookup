@@ -1,0 +1,42 @@
+CACHE
+<?php
+
+/**
+ * @file
+ * Contains AddressFieldLookupWebTest.
+ */
+
+/**
+ * Defines a class for testing the Address Field Lookup module.
+ */
+class AddressFieldLookupWebTest extends AddressFieldLookupWebTestBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => 'Base functionality tests',
+      'description' => 'Tests the base functionality of the Address Field Lookup module.',
+      'group' => 'Address Field Lookup',
+    );
+  }
+
+  // TODO: Test administer services permission.
+
+  // TODO: Test services array.
+  // - Example service available.
+  // - Fake service is not available.
+
+  // TODO: Test get default service
+  // - Default service is example.
+  // - Default service is not fake.
+
+  // TODO: Test get addresses
+  // - Valid search term.
+  // - Invalid search term.
+
+  // TODO: Test get address details
+  // - Valid ID
+  // - Invalid ID.
+}

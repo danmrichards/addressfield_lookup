@@ -5,6 +5,9 @@ core = 7.x
 configure = admin/config/regional/addressfield-lookup
 
 files[] = addressfield_lookup.interface.inc
+files[] = tests/AddressFieldLookupWebTestBase.test
+files[] = tests/AddressFieldLookupWebTest.test
+files[] = tests/AddressFieldLookupAdminWebTest.test
 
 dependencies[] = addressfield
 dependencies[] = ctools

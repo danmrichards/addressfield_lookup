@@ -12,7 +12,12 @@ Address Field Lookup services can be defined through the module API, the main
 entry point for this being hook_addressfield_lookup_service_info. Documentation
 can be found in addressfield_lookup.api.php. Each service needs to provide its
 own handler class which implements the AddressFieldLookupInterface defined
-within this module.
+within addressfield_lookup.interface.inc file of this module.
+
+To create your own services refer to the API documentation and the interface.
+There is also an example module in the tests/modules/addressfield_lookup_example
+folder. While intended for unit testing this is also useful as a reference
+implementation.
 
 Each service is required to provide its own configuration interface via the
 form API. The actual details of the configuration can be fully bespoke to the

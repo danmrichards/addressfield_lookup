@@ -1,0 +1,26 @@
+<?php
+
+/**
+ * @file
+ * Contains AddressFieldLookupWebTestBase.
+ */
+
+/**
+ * Defines a base class for testing the Address Field Lookup module.
+ */
+abstract class AddressFieldLookupWebTestBase extends DrupalWebTestCase {
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $profile = 'testing';
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp() {
+    // Ensure address field lookup and the example implementation are enabled.
+    parent::setUp('addressfield_lookup', 'addressfield_lookup_example');
+  }
+
+}

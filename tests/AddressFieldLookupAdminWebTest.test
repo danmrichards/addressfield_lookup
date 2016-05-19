@@ -1,0 +1,34 @@
+<?php
+
+/**
+ * @file
+ * Contains AddressFieldLookupWebTest.
+ */
+
+/**
+ * Defines a class for testing the Address Field Lookup module.
+ */
+class AddressFieldLookupAdminWebTest extends AddressFieldLookupWebTestBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => 'Address Field Lookup administration',
+      'description' => 'Tests the administrative interface of the Address Field Lookup module.',
+      'group' => 'Address Field Lookup',
+    );
+  }
+
+  // TODO: Test settings page:
+  // - Test presence of cache length field.
+  // - Test presence of hide field checkbox.
+
+  // TODO: Test services page:
+  // - Test row and radio button exists for each service.
+  // - Test presence of configure link.
+  // - Test presence of submit button.
+  // - Test presence of test default service button.
+
+}

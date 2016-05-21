@@ -21,14 +21,51 @@ class AddressFieldLookupAdminWebTest extends AddressFieldLookupWebTestBase {
     );
   }
 
-  // TODO: Test settings page:
-  // - Test presence of cache length field.
-  // - Test presence of hide field checkbox.
+  /**
+   * Test the address field lookup services overview page.
+   *
+   * Page found at admin/config/regional/addressfield-lookup.
+   */
+  public function testAddressFieldLookupServicesPage() {
+    // Check permissions and get page contents.
+    $this->getWithPermissions(array('administer addressfield lookup services'), 'admin/config/regional/addressfield-lookup');
 
-  // TODO: Test services page:
-  // - Test row and radio button exists for each service.
-  // - Test presence of configure link.
-  // - Test presence of submit button.
-  // - Test presence of test default service button.
+    // Check UI correct for all defined services.
+    foreach (addressfield_lookup_services() as $service_name => $service_details) {
+      $this->assertText($service_details['name']);
+      $this->assertText('(Machine name: ' . $service_name . ')');
+      $this->assertField('addressfield_lookup_default_service', $service_name);
+    }
+
+    // Check for submit buttons.
+    $this->assertField('op', t('Save configuration'));
+    $this->assertField('op', t('Test default service'));
+
+    // Test the save configuration button and set the default service.
+    $this->drupalPost('admin/config/regional/addressfield-lookup', array('addressfield_lookup_default_service' => 'example'), t('Save configuration'));
+    $this->assertText(t('Configuration saved.'));
+
+    // Load the default service and test it is the example service.
+    $default_service = addressfield_lookup_get_default_service();
+    $this->assertEqual($default_service['name'], t('Example'));
+
+    // Test the default service is working.
+    $this->drupalPost('admin/config/regional/addressfield-lookup', array(), t('Test default service'));
+    $this->assertRaw(t('The default service (%service_name) test was successful.', array('%service_name' => $default_service['name'])), 'Default service tested and working.');
+  }
+
+  /**
+   * Test the address field lookup settings page.
+   *
+   * Page found at admin/config/regional/addressfield-lookup/settings.
+   */
+  public function testAddressFieldLookupSettingsPage() {
+    // Check permissions and get page contents.
+    $this->getWithPermissions(array('administer addressfield lookup services'), 'admin/config/regional/addressfield-lookup/settings');
+
+    // Check UI elements present.
+    $this->assertField('addressfield_lookup_addressfield_hide_extra_fields', variable_get('addressfield_lookup_addressfield_hide_extra_fields', TRUE));
+    $this->assertField('addressfield_lookup_cache_length', variable_get('addressfield_lookup_cache_length', ADDRESSFIELD_LOOKUP_CACHE_LENGTH));
+  }
 
 }

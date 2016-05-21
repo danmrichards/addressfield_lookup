@@ -23,4 +23,33 @@ abstract class AddressFieldLookupWebTestBase extends DrupalWebTestCase {
     parent::setUp('addressfield_lookup', 'addressfield_lookup_example');
   }
 
+  /**
+   * Retrieves a path making sure a set of permissions is required to access it.
+   *
+   * After calling this method, a user with the given permissions is logged in
+   * and the retrieved page is loaded into the internal browser.
+   *
+   * @param array $permissions
+   *   An array of permission names to assign to user. Note that the user always
+   *   has the default permissions derived from the "authenticated users" role.
+   * @param string $path
+   *   Drupal path or URL to load into the internal browser.
+   * @param array $options
+   *   Options to be forwarded to url().
+   * @param array $headers
+   *   An array containing additional HTTP request headers, each formatted as
+   *   "name: value".
+   *
+   * @see \DrupalWebTestCase::drupalGet()
+   * @see \DrupalWebTestCase::drupalCreateUser()
+   */
+  protected function getWithPermissions(array $permissions, $path, array $options = array(), array $headers = array()) {
+    $this->drupalGet($path, $options, $headers);
+    $this->assertResponse(403);
+
+    $this->drupalLogin($this->drupalCreateUser($permissions));
+    $this->drupalGet($path, $options, $headers);
+    $this->assertResponse(200);
+  }
+
 }

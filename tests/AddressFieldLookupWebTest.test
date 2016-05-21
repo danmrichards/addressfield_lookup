@@ -21,8 +21,6 @@ class AddressFieldLookupWebTest extends AddressFieldLookupWebTestBase {
     );
   }
 
-  // TODO: Test administer services permission.
-
   // TODO: Test services array.
   // - Example service available.
   // - Fake service is not available.

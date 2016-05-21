@@ -46,7 +46,7 @@ interface AddressFieldLookupInterface {
    * @param mixed $address_id
    *   ID of the address to get details for.
    *
-   * @return array $address
+   * @return mixed $address
    *   Array of details for the given address in the format:
    *     id - Address ID
    *     sub_premise - The sub_premise of this address
@@ -59,6 +59,8 @@ interface AddressFieldLookupInterface {
    *     (i.e. State/Province)
    *     organisation_name - Contents of a primary OrganisationName element
    *     in the xNL XML.
+   *
+   *   Or FALSE.
    */
   public function getAddressDetails($address_id);
 

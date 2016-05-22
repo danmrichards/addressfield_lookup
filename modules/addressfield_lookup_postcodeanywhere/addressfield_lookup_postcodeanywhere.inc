@@ -54,10 +54,6 @@ class AddressFieldLookupPostcodeAnywhere implements AddressFieldLookupInterface 
   // List of filters support by the Postcode Anywhere API.
   protected $allowedFilters = array('None', 'OnlyResidential', 'OnlyCommercial');
 
-  // The search term to find. The search term can be a postcode, company name or
-  // street and town (separated by commas).
-  protected $searchTerm;
-
   // Array of results from the API.
   protected $result = array();
 
@@ -152,201 +148,6 @@ class AddressFieldLookupPostcodeAnywhere implements AddressFieldLookupInterface 
     }
 
     return $this;
-  }
-
-  /**
-   * Set the term that we'll be using to lookup addresses.
-   *
-   * @param string $lookup_term
-   *   String containing the lookup term.
-   *
-   * @return AddressFieldLookupInterface
-   *   The called object.
-   */
-  public function setLookupTerm($lookup_term) {
-    $this->searchTerm = $lookup_term;
-
-    return $this;
-  }
-
-  /**
-   * Perform the lookup based on the current term.
-   *
-   * @return bool
-   *   Was the lookup successful or not?
-   */
-  public function lookup() {
-    // Build array of parameters to pass to the API.
-    $lookup_params = array(
-      'SearchTerm' => $this->searchTerm,
-      'Filter' => $this->filter,
-    );
-
-    // Get the raw API result.
-    $api_response = $this->callApi('Find', $lookup_params);
-
-    // Parse the API repsonse.
-    if (isset($api_response)) {
-      $parsed_api_response = $this->parseApiResponse($api_response);
-
-      // Build the format we need.
-      if (!empty($parsed_api_response)) {
-        foreach ($parsed_api_response as $parsed_api_response_item) {
-          $this->result[] = array(
-            'id' => $parsed_api_response_item->Id,
-            'street' => $parsed_api_response_item->StreetAddress,
-            'place' => $parsed_api_response_item->Place,
-          );
-        }
-
-        return TRUE;
-      }
-      else {
-        return FALSE;
-      }
-    }
-    else {
-      // No result.
-      return FALSE;
-    }
-  }
-
-  /**
-   * Get the results of the lookup.
-   *
-   * @return array
-   *   Array of lookup results in the format:
-   *     id - Address ID
-   *     street - Street (Address Line 1)
-   *     place - Remainder of address.
-   */
-  public function getLookupResult() {
-    // Check we have some data to return.
-    if (!empty($this->result)) {
-      return $this->result;
-    }
-    else {
-      return FALSE;
-    }
-  }
-
-  /**
-   * Get the full details for a given address.
-   *
-   * @param mixed $address_id
-   *   ID of the address to get details for.
-   *
-   * @return mixed $address_details
-   *   Array of details for the given address in the format:
-   *     id - Address ID
-   *     sub_premise - The sub_premise of this address
-   *     premise - The premise of this address. (i.e. Apartment / Suite number).
-   *     thoroughfare - The thoroughfare of this address. (i.e. Street address).
-   *     dependent_locality - The dependent locality of this address.
-   *     locality - The locality of this address. (i.e. City).
-   *     postal_code - The postal code of this address.
-   *     administrative_area - The administrative area of this address.
-   *     (i.e. State/Province)
-   *     organisation_name - Contents of a primary OrganisationName element
-   *     in the xNL XML.
-   *
-   *   Or FALSE.
-   */
-  public function getAddressDetails($address_id) {
-    // Build array of parameters to pass to the API.
-    $address_details_params = array(
-      'Id' => $address_id,
-    );
-
-    // Get the raw API result.
-    $api_response = $this->callApi('RetrieveById', $address_details_params);
-
-    // Parse the API repsonse.
-    if (isset($api_response)) {
-      $parsed_api_response = $this->parseApiResponse($api_response);
-
-      // Build the format we need.
-      if (!empty($parsed_api_response[0])) {
-        // Address details array.
-        $address_details = array(
-          'id' => $address_id,
-        );
-
-        // Sub premise.
-        if (!empty($parsed_api_response[0]->SubBuilding)) {
-          $address_details['sub_premise'] = $parsed_api_response[0]->SubBuilding;
-        }
-
-        // Premise.
-        $address_details['premise'] = '';
-
-        // Premise: Check for building number.
-        if (!empty($parsed_api_response[0]->BuildingNumber)) {
-          $address_details['premise'] .= $parsed_api_response[0]->BuildingNumber . ' ';
-        }
-
-        // Premise: Check for building name.
-        if (!empty($parsed_api_response[0]->BuildingName)) {
-          $address_details['premise'] .= $parsed_api_response[0]->BuildingName . ' ';
-        }
-
-        // Premise: Remove white space.
-        $address_details['premise'] = trim($address_details['premise']);
-
-        // Thoroughfare.
-        $address_details['thoroughfare'] = '';
-
-        // Thoroughfare: Street 1.
-        if (!empty($parsed_api_response[0]->PrimaryStreet)) {
-          $address_details['thoroughfare'] .= $parsed_api_response[0]->PrimaryStreet . ' ';
-        }
-
-        // Thoroughfare: Street 2.
-        if (!empty($parsed_api_response[0]->SecondaryStreet)) {
-          $address_details['thoroughfare'] .= $parsed_api_response[0]->SecondaryStreet . ' ';
-        }
-
-        // Premise: Remove white space.
-        $address_details['thoroughfare'] = trim($address_details['thoroughfare']);
-
-        // Dependent locality.
-        $address_details['dependent_locality'] = '';
-
-        // Dependent locality: Initial dependent locality.
-        if (!empty($parsed_api_response[0]->DependentLocality)) {
-          $address_details['dependent_locality'] .= $parsed_api_response[0]->DependentLocality . ' ';
-        }
-
-        // Dependent locality: Double dependent locality.
-        if (!empty($parsed_api_response[0]->DoubleDependentLocality)) {
-          $address_details['dependent_locality'] .= $parsed_api_response[0]->DoubleDependentLocality . ' ';
-        }
-
-        // Dependent locality: Remove white space.
-        $address_details['dependent_locality'] = trim($address_details['dependent_locality']);
-
-        // Locality.
-        $address_details['locality'] = isset($parsed_api_response[0]->PostTown) ? $parsed_api_response[0]->PostTown : '';
-
-        // Postal code.
-        $address_details['postal_code'] = isset($parsed_api_response[0]->Postcode) ? $parsed_api_response[0]->Postcode : '';
-
-        // Administrative area.
-        $address_details['administrative_area'] = isset($parsed_api_response[0]->County) ? $parsed_api_response[0]->County : '';
-
-        // Organisation name.
-        $address_details['organisation_name'] = isset($parsed_api_response[0]->Company) ? $parsed_api_response[0]->Company : '';
-
-        return $address_details;
-      }
-      else {
-        return FALSE;
-      }
-    }
-    else {
-      // No result.
-      return FALSE;
-    }
   }
 
   /**
@@ -498,6 +299,147 @@ class AddressFieldLookupPostcodeAnywhere implements AddressFieldLookupInterface 
     }
 
     return $parsed_api_response;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function lookup($term) {
+    // Build array of parameters to pass to the API.
+    $lookup_params = array(
+      'SearchTerm' => $term,
+      'Filter' => $this->filter,
+    );
+
+    // Get the raw API result.
+    $api_response = $this->callApi('Find', $lookup_params);
+
+    // Parse the API repsonse.
+    if (isset($api_response)) {
+      $parsed_api_response = $this->parseApiResponse($api_response);
+
+      // Build the format we need.
+      if (!empty($parsed_api_response)) {
+        $results = array();
+
+        foreach ($parsed_api_response as $parsed_api_response_item) {
+          $results[] = array(
+            'id' => $parsed_api_response_item->Id,
+            'street' => $parsed_api_response_item->StreetAddress,
+            'place' => $parsed_api_response_item->Place,
+          );
+        }
+
+        return $results;
+      }
+      else {
+        return FALSE;
+      }
+    }
+    else {
+      // No result.
+      return FALSE;
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getAddressDetails($address_id) {
+    // Build array of parameters to pass to the API.
+    $address_details_params = array(
+      'Id' => $address_id,
+    );
+
+    // Get the raw API result.
+    $api_response = $this->callApi('RetrieveById', $address_details_params);
+
+    // Parse the API repsonse.
+    if (isset($api_response)) {
+      $parsed_api_response = $this->parseApiResponse($api_response);
+
+      // Build the format we need.
+      if (!empty($parsed_api_response[0])) {
+        // Address details array.
+        $address_details = array(
+          'id' => $address_id,
+        );
+
+        // Sub premise.
+        if (!empty($parsed_api_response[0]->SubBuilding)) {
+          $address_details['sub_premise'] = $parsed_api_response[0]->SubBuilding;
+        }
+
+        // Premise.
+        $address_details['premise'] = '';
+
+        // Premise: Check for building number.
+        if (!empty($parsed_api_response[0]->BuildingNumber)) {
+          $address_details['premise'] .= $parsed_api_response[0]->BuildingNumber . ' ';
+        }
+
+        // Premise: Check for building name.
+        if (!empty($parsed_api_response[0]->BuildingName)) {
+          $address_details['premise'] .= $parsed_api_response[0]->BuildingName . ' ';
+        }
+
+        // Premise: Remove white space.
+        $address_details['premise'] = trim($address_details['premise']);
+
+        // Thoroughfare.
+        $address_details['thoroughfare'] = '';
+
+        // Thoroughfare: Street 1.
+        if (!empty($parsed_api_response[0]->PrimaryStreet)) {
+          $address_details['thoroughfare'] .= $parsed_api_response[0]->PrimaryStreet . ' ';
+        }
+
+        // Thoroughfare: Street 2.
+        if (!empty($parsed_api_response[0]->SecondaryStreet)) {
+          $address_details['thoroughfare'] .= $parsed_api_response[0]->SecondaryStreet . ' ';
+        }
+
+        // Premise: Remove white space.
+        $address_details['thoroughfare'] = trim($address_details['thoroughfare']);
+
+        // Dependent locality.
+        $address_details['dependent_locality'] = '';
+
+        // Dependent locality: Initial dependent locality.
+        if (!empty($parsed_api_response[0]->DependentLocality)) {
+          $address_details['dependent_locality'] .= $parsed_api_response[0]->DependentLocality . ' ';
+        }
+
+        // Dependent locality: Double dependent locality.
+        if (!empty($parsed_api_response[0]->DoubleDependentLocality)) {
+          $address_details['dependent_locality'] .= $parsed_api_response[0]->DoubleDependentLocality . ' ';
+        }
+
+        // Dependent locality: Remove white space.
+        $address_details['dependent_locality'] = trim($address_details['dependent_locality']);
+
+        // Locality.
+        $address_details['locality'] = isset($parsed_api_response[0]->PostTown) ? $parsed_api_response[0]->PostTown : '';
+
+        // Postal code.
+        $address_details['postal_code'] = isset($parsed_api_response[0]->Postcode) ? $parsed_api_response[0]->Postcode : '';
+
+        // Administrative area.
+        $address_details['administrative_area'] = isset($parsed_api_response[0]->County) ? $parsed_api_response[0]->County : '';
+
+        // Organisation name.
+        $address_details['organisation_name'] = isset($parsed_api_response[0]->Company) ? $parsed_api_response[0]->Company : '';
+
+        return $address_details;
+      }
+      else {
+        return FALSE;
+      }
+    }
+    else {
+      // No result.
+      return FALSE;
+    }
   }
 
 }

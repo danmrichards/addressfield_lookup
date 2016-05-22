@@ -11,34 +11,20 @@
 interface AddressFieldLookupInterface {
 
   /**
-   * Set the term that we'll be using to lookup addresses.
+   * Lookup addresses for the given search term.
    *
-   * @param string $lookup_term
+   * @param string $term
    *   String containing the lookup term.
    *
-   * @return AddressFieldLookupInterface
-   *   The called object.
-   */
-  public function setLookupTerm($lookup_term);
-
-  /**
-   * Perform the lookup based on the current term.
-   *
-   * @return bool
-   *   Was the lookup successful or not?
-   */
-  public function lookup();
-
-  /**
-   * Get the results of the lookup.
-   *
-   * @return array $results
+   * @return mixed $results
    *   Array of lookup results in the format:
    *     id - Address ID.
    *     street - Street (Address Line 1).
    *     place - Remainder of address.
+   *
+   *   Or FALSE.
    */
-  public function getLookupResult();
+  public function lookup($term);
 
   /**
    * Get the full details for a given address.

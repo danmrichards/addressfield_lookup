@@ -10,10 +10,6 @@
  */
 class AddressFieldLookupExample implements AddressFieldLookupInterface {
 
-  // The search term to find. The search term can be a postcode, company name or
-  // street and town (separated by commas).
-  protected $searchTerm;
-
   // A mock set of lookup results.
   protected $mockResults = array(
     'TS1 1ST' => array(
@@ -41,37 +37,13 @@ class AddressFieldLookupExample implements AddressFieldLookupInterface {
   /**
    * {@inheritdoc}
    */
-  public function setLookupTerm($lookup_term) {
-    $this->searchTerm = $lookup_term;
-
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function lookup() {
+  public function lookup($term) {
     // Check for a valid search term in the mock results.
-    if (isset($this->mockResults[$this->searchTerm]) && !empty($this->mockResults[$this->searchTerm])) {
-      $this->result[] = $this->mockResults[$this->searchTerm];
-
-      return TRUE;
+    if (isset($this->mockResults[$term]) && !empty($this->mockResults[$term])) {
+      return array($this->mockResults[$term]);
     }
     else {
       // No result.
-      return FALSE;
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getLookupResult() {
-    // Check we have some data to return.
-    if (!empty($this->result)) {
-      return $this->result;
-    }
-    else {
       return FALSE;
     }
   }

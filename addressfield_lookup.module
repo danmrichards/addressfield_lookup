@@ -286,12 +286,9 @@ function addressfield_lookup_get_addresses($search_term, $show_errors = FALSE, $
         // Check if the module defining the service has it's own function for
         // bespoke instantiation of the service object.
         if ($addressfield_lookup_service_object = module_invoke($addressfield_lookup_default_service['module'], 'addressfield_lookup_get_service_object', $addressfield_lookup_default_service['class'])) {
-          // Set the search term.
-          $addressfield_lookup_service_object->setLookupTerm($search_term);
-
           // Do the search.
-          if ($addressfield_lookup_service_object->lookup()) {
-            $addresses[$search_term] = $addressfield_lookup_service_object->getLookupResult();
+          if ($lookup_results = $addressfield_lookup_service_object->lookup($search_term)) {
+            $addresses[$search_term] = $lookup_results;
 
             // Cache the addresses.
             $cache_length = REQUEST_TIME + variable_get('addressfield_lookup_cache_length', ADDRESSFIELD_LOOKUP_CACHE_LENGTH);

@@ -184,8 +184,8 @@ function addressfield_lookup_services($reset = FALSE) {
 /**
  * Get the default address field lookup service.
  *
- * @return array $addressfield_lookup_default_service
- *   Array containing the default address field service information.
+ * @return mixed $addressfield_lookup_default_service
+ *   Array containing the default address field service information or FALSE.
  */
 function addressfield_lookup_get_default_service() {
   $addressfield_lookup_default_service = &drupal_static(__FUNCTION__);

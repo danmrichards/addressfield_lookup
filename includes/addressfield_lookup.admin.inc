@@ -139,7 +139,10 @@ function addressfield_lookup_services_overview_form_submit($form, &$form_state) 
  */
 function addressfield_lookup_services_test_default_service($form, &$form_state) {
   // Get the default service.
-  $addressfield_lookup_default_service = addressfield_lookup_get_default_service();
+  if ($addressfield_lookup_default_service != addressfield_lookup_get_default_service()) {
+    drupal_set_message(t('Could not create the default service.'), 'warning');
+    return FALSE;
+  }
 
   // Check there is some test data.
   if (!isset($addressfield_lookup_default_service['test data'])) {

@@ -42,17 +42,14 @@ class AddressFieldLookupWebTest extends AddressFieldLookupWebTestBase {
    *   Address field lookup service definition array.
    */
   protected function getExampleServiceDefinition() {
-    return array(
-      'example' => array(
-        'name' => t('Example'),
-        'class' => 'AddressFieldLookupExample',
-        'object factory' => 'addressfield_lookup_example_create',
-        'description' => t('Provides an example address field lookup service.'),
-        'test data' => 'TS1 1ST',
-        'module' => 'addressfield_lookup_example',
-        'machine_name' => 'example',
-      ),
-    );
+    // Get the service array from the example module.
+    $example_service_info = module_invoke('addressfield_lookup_example', 'addressfield_lookup_service_info');
+
+    // Set the module and service name.
+    $example_service_info['example']['module'] = 'addressfield_lookup_example';
+    $example_service_info['example']['machine_name'] = 'example';
+
+    return $example_service_info;
   }
 
   /**

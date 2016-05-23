@@ -13,14 +13,16 @@
  *   name. The array contains the following values:
  *     - 'name' A human readable name for the service
  *     - 'class' A string specifying the PHP class that implements the
- *     AddressFieldLookupInterface interface.
+ *       AddressFieldLookupInterface interface.
+ *     - 'object factory' A function responsible for instantiating the PHP
+ *       class defined above. Takes this config array as a parameter.
  *     - 'description' A brief description of the address field lookup service.
  *     - 'config path' The path to the configuration form for this service. The
- *     path will be used as an inline link on the address field lookup module
- *     configuration form. Note that the module implementing the hook must also
- *     define the menu URL and callback.
+ *       path will be used as an inline link on the address field lookup module
+ *       configuration form. Note that the module implementing the hook must
+ *       also define the menu URL and callback.
  *     - 'test data' An example value that will be used to test the status of
- *     connectivity to the service.
+ *       connectivity to the service.
  *
  * @see addressfield_lookup_services()
  * @see hook_addressfield_lookup_service_info_alter()
@@ -30,6 +32,7 @@ function hook_addressfield_lookup_service_info() {
     'my_awesome_postcode' => array(
       'name' => t('My awesome postcode API'),
       'class' => 'MyAwesomePostcodeAPI',
+      'object factory' => 'my_awesome_postcode_create',
       'description' => t('Provides an address field lookup service based on integration with the My Awesome Postcode API.'),
       'config path' => 'admin/config/regional/addressfield-lookup/my-awesome-addressfield-lookup-service/configure',
       'test data' => 'BH15 1HH',
@@ -48,25 +51,6 @@ function hook_addressfield_lookup_service_info() {
 function hook_addressfield_lookup_service_info_alter(array &$addressfield_lookup_services) {
   // Swap in a new REST class for the My Awesome Postcode API.
   $addressfield_lookup_services['my_awesome_postcode']['class'] = 'MyAwesomePostcodeRestAPI';
-}
-
-/**
- * Instantiate the address look service class and return the object wrapper.
- *
- * @param string $class
- *   Name of the PHP class that implements AddressFieldLookupInterface.
- *
- * @return AddressFieldLookupInterface
- *   The instantiated class.
- */
-function hook_addressfield_lookup_get_service_object($class) {
-  // Get the API config.
-  $my_awesome_postcode_config = my_awesome_postcode_get_config();
-
-  // Instantiate the API class.
-  $my_awesome_postcode_api = new $class($my_awesome_postcode_config['api_key'], $my_awesome_postcode_config['api_secret']);
-
-  return $my_awesome_postcode_api;
 }
 
 /**

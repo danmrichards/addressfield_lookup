@@ -27,6 +27,12 @@ This module ships with the following services by default (via sub-modules):
 
   * PCA Predict (Formerly Postcode Anywhere)
 
+API CHANGES
+-----------
+Since the initial release of this module there have been breaking API changes.
+These will cause existing integrations with the Address Field Lookup API to
+break. For more details please see API.txt
+
 REQUIREMENTS
 ------------
 This module requires the following modules:

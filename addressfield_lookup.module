@@ -208,7 +208,15 @@ function addressfield_lookup_get_default_service() {
       // Check we have a default service, and it can be instantiated.
       if (isset($addressfield_lookup_services[$default_service_name])) {
         $addressfield_lookup_default_service = $addressfield_lookup_services[$default_service_name];
-        $addressfield_lookup_default_service_object = module_invoke($addressfield_lookup_default_service['module'], 'addressfield_lookup_get_service_object', $addressfield_lookup_default_service['class']);
+
+        // Check for an object factory function.
+        if (isset($addressfield_lookup_default_service['object factory']) && function_exists($addressfield_lookup_default_service['object factory'])) {
+          $addressfield_lookup_default_service_object = call_user_func($addressfield_lookup_default_service['object factory'], $addressfield_lookup_default_service);
+        }
+        else {
+          watchdog('addressfield_lookup', 'No factory function for default Address Lookup service.', array(), WATCHDOG_ERROR);
+          $addressfield_lookup_default_service = FALSE;
+        }
       }
     }
     catch (Exception $e) {
@@ -285,7 +293,7 @@ function addressfield_lookup_get_addresses($search_term, $show_errors = FALSE, $
       try {
         // Check if the module defining the service has it's own function for
         // bespoke instantiation of the service object.
-        if ($addressfield_lookup_service_object = module_invoke($addressfield_lookup_default_service['module'], 'addressfield_lookup_get_service_object', $addressfield_lookup_default_service['class'])) {
+        if ($addressfield_lookup_service_object = call_user_func($addressfield_lookup_default_service['object factory'], $addressfield_lookup_default_service)) {
           // Do the search.
           if ($lookup_results = $addressfield_lookup_service_object->lookup($search_term)) {
             $addresses[$search_term] = $lookup_results;
@@ -403,7 +411,7 @@ function addressfield_lookup_get_address_details($address_id, $show_errors = FAL
       try {
         // Check if the module defining the service has it's own function for
         // bespoke instantiation of the service object.
-        if ($addressfield_lookup_service_object = module_invoke($addressfield_lookup_default_service['module'], 'addressfield_lookup_get_service_object', $addressfield_lookup_default_service['class'])) {
+        if ($addressfield_lookup_service_object = call_user_func($addressfield_lookup_default_service['object factory'], $addressfield_lookup_default_service)) {
           // Get the address details from the service.
           $address_details[$address_id] = $addressfield_lookup_service_object->getAddressDetails($address_id);
 

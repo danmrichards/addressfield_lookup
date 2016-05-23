@@ -46,6 +46,7 @@ class AddressFieldLookupWebTest extends AddressFieldLookupWebTestBase {
       'example' => array(
         'name' => t('Example'),
         'class' => 'AddressFieldLookupExample',
+        'object factory' => 'addressfield_lookup_example_create',
         'description' => t('Provides an example address field lookup service.'),
         'test data' => 'TS1 1ST',
         'module' => 'addressfield_lookup_example',

@@ -484,7 +484,7 @@ function addressfield_lookup_get_format_updates(array &$format, array $address) 
   $addressfield_lookup_default_service = addressfield_lookup_get_default_service();
 
   // Check there is a default service.
-  if (isset($addressfield_lookup_default_service)) {
+  if (is_array($addressfield_lookup_default_service)) {
     // Invoke the update hook (if it exists) in the default service module.
     if ($format_updates = module_invoke($addressfield_lookup_default_service['module'], 'addressfield_lookup_format_update', $format, $address)) {
       $format = $format_updates;

@@ -229,6 +229,30 @@ function addressfield_lookup_get_default_service() {
 }
 
 /**
+ * Get the instantiated default addressfield lookup service object.
+ *
+ * @return mixed
+ *   The instantiated default addressfield lookup service object or FALSE.
+ */
+function addressfield_lookup_get_default_service_object() {
+  // Get the default service object.
+  $addressfield_lookup_service = addressfield_lookup_get_default_service();
+
+  // Check we have a valid service.
+  if (!is_array($addressfield_lookup_service)) {
+    return FALSE;
+  }
+
+  // Try to instantiate the service object.
+  if ($addressfield_lookup_service_object = call_user_func($addressfield_lookup_service['object factory'], $addressfield_lookup_service)) {
+    return $addressfield_lookup_service_object;
+  }
+
+  // There was no service that could be instantiated.
+  return FALSE;
+}
+
+/**
  * Peform an address lookup using the current default address lookup service.
  *
  * @param string $search_term
@@ -291,9 +315,8 @@ function addressfield_lookup_get_addresses($search_term, $show_errors = FALSE, $
     else {
       // Do the lookup.
       try {
-        // Check if the module defining the service has it's own function for
-        // bespoke instantiation of the service object.
-        if ($addressfield_lookup_service_object = call_user_func($addressfield_lookup_default_service['object factory'], $addressfield_lookup_default_service)) {
+        // Get the default service object.
+        if ($addressfield_lookup_service_object = addressfield_lookup_get_default_service_object()) {
           // Do the search.
           if ($lookup_results = $addressfield_lookup_service_object->lookup($search_term)) {
             $addresses[$search_term] = $lookup_results;
@@ -409,9 +432,8 @@ function addressfield_lookup_get_address_details($address_id, $show_errors = FAL
 
       // Do the address retrieval.
       try {
-        // Check if the module defining the service has it's own function for
-        // bespoke instantiation of the service object.
-        if ($addressfield_lookup_service_object = call_user_func($addressfield_lookup_default_service['object factory'], $addressfield_lookup_default_service)) {
+        // Get the default service object.
+        if ($addressfield_lookup_service_object = addressfield_lookup_get_default_service_object()) {
           // Get the address details from the service.
           $address_details[$address_id] = $addressfield_lookup_service_object->getAddressDetails($address_id);
 

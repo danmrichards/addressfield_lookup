@@ -257,8 +257,6 @@ function addressfield_lookup_get_default_service_object() {
  *
  * @param string $search_term
  *   Search term to lookup addresses for.
- * @param bool $show_errors
- *   Should error messages be shown?
  * @param bool $reset
  *   Force a reset of the addresses cache for this search term.
  *
@@ -268,17 +266,9 @@ function addressfield_lookup_get_default_service_object() {
  *     street - Street (Address Line 1)
  *     place - Remainder of address.
  */
-function addressfield_lookup_get_addresses($search_term, $show_errors = FALSE, $reset = FALSE) {
-  // Check we have a search term.
+function addressfield_lookup_get_addresses($search_term, $reset = FALSE) {
+  // Bail out early if we have no search term.
   if (empty($search_term)) {
-    // Log the error.
-    watchdog('addressfield_lookup', 'Address lookup failed. Reason: no search term was found.', array(), WATCHDOG_ERROR);
-
-    // Show the error if required.
-    if ($show_errors) {
-      drupal_set_message(t('Address lookup failed. Reason: no search term was found.'), 'error');
-    }
-
     return FALSE;
   }
 
@@ -291,16 +281,8 @@ function addressfield_lookup_get_addresses($search_term, $show_errors = FALSE, $
     // Get the default service.
     $addressfield_lookup_default_service = addressfield_lookup_get_default_service();
 
-    // Check there is a default service.
+    // Bail out if there is no default service.
     if (!isset($addressfield_lookup_default_service)) {
-      // Log the error.
-      watchdog('addressfield_lookup', 'Address lookup failed. Reason: no address lookup service was found.', array(), WATCHDOG_ERROR);
-
-      // Show the error if required.
-      if ($show_errors) {
-        drupal_set_message(t('Address lookup failed. Reason: no address lookup service was found.'), 'error');
-      }
-
       return FALSE;
     }
 
@@ -330,26 +312,13 @@ function addressfield_lookup_get_addresses($search_term, $show_errors = FALSE, $
           }
         }
         else {
-          // Log the error.
-          watchdog('addressfield_lookup', 'Address lookup failed. Reason: could not instantiate %class_name class.', array('%class_name' => $addressfield_lookup_default_service['class']), WATCHDOG_ERROR);
-
-          // Show the error if required.
-          if ($show_errors) {
-            drupal_set_message(t('Address lookup failed. Reason: could not instantiate %class_name class.', array('%class_name' => $addressfield_lookup_default_service['class'])), 'error');
-          }
-
+          // No service could be instantiated so bail out.
           return FALSE;
         }
       }
       catch (Exception $e) {
-        // Failed to get addresses.
-        // Log the error.
+        // Failed to get addresses due to an exception, better log it.
         watchdog('addressfield_lookup', 'Address lookup failed. Reason: @reason', array('@reason' => $e->getMessage()), WATCHDOG_ERROR);
-
-        // Show the error if required.
-        if ($show_errors) {
-          drupal_set_message(t('Address lookup failed. Reason: @reason', array('@reason' => $e->getMessage())), 'error');
-        }
 
         return FALSE;
       }
@@ -364,8 +333,6 @@ function addressfield_lookup_get_addresses($search_term, $show_errors = FALSE, $
  *
  * @param mixed $address_id
  *   ID of the address to get details for.
- * @param bool $show_errors
- *   Should error messages be shown?
  * @param bool $reset
  *   Force a reset of the address details cache for this address ID.
  *
@@ -385,17 +352,9 @@ function addressfield_lookup_get_addresses($search_term, $show_errors = FALSE, $
  *
  *   Or FALSE.
  */
-function addressfield_lookup_get_address_details($address_id, $show_errors = FALSE, $reset = FALSE) {
-  // Check we have a search term.
+function addressfield_lookup_get_address_details($address_id, $reset = FALSE) {
+  // Bail out early if we have no address ID.
   if (empty($address_id)) {
-    // Log the error.
-    watchdog('addressfield_lookup', 'Address details retrieval failed. Reason: no address id was found.', array(), WATCHDOG_ERROR);
-
-    // Show the error if required.
-    if ($show_errors) {
-      drupal_set_message(t('Address details retrieval failed. Reason: no address id was found.'), 'error');
-    }
-
     return FALSE;
   }
 
@@ -406,16 +365,8 @@ function addressfield_lookup_get_address_details($address_id, $show_errors = FAL
     // Get the default service.
     $addressfield_lookup_default_service = addressfield_lookup_get_default_service();
 
-    // Check there is a default service.
+    // Bail out if there is no default service.
     if (!isset($addressfield_lookup_default_service)) {
-      // Log the error.
-      watchdog('addressfield_lookup', 'Address details retrieval failed. Reason: no address lookup service was found.', array(), WATCHDOG_ERROR);
-
-      // Show the error if required.
-      if ($show_errors) {
-        drupal_set_message(t('Address details retrieval failed. Reason: no address lookup service was found.'), 'error');
-      }
-
       return FALSE;
     }
 
@@ -442,26 +393,13 @@ function addressfield_lookup_get_address_details($address_id, $show_errors = FAL
           cache_set($address_details_cache_id, $address_details[$address_id], 'cache_addressfield_lookup_address_details', $cache_length);
         }
         else {
-          // Log the error.
-          watchdog('addressfield_lookup', 'Address details retrieval failed. Reason: could not instantiate %class_name class.', array('%class_name' => $addressfield_lookup_default_service['class']), WATCHDOG_ERROR);
-
-          // Show the error if required.
-          if ($show_errors) {
-            drupal_set_message(t('Address details retrieval failed. Reason: could not instantiate %class_name class.', array('%class_name' => $addressfield_lookup_default_service['class'])), 'error');
-          }
-
+          // No service could be instantiated so bail out.
           return FALSE;
         }
       }
       catch (Exception $e) {
-        // Failed to get addresses.
-        // Log the error.
+        // Failed to get address details due to an exception, better log it.
         watchdog('addressfield_lookup', 'Address details retrieval failed. Reason: @reason', array('@reason' => $e->getMessage()), WATCHDOG_ERROR);
-
-        // Show the error if required.
-        if ($show_errors) {
-          drupal_set_message(t('Address details retrieval failed. Reason: @reason', array('@reason' => $e->getMessage())), 'error');
-        }
 
         return FALSE;
       }

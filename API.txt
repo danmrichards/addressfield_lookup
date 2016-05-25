@@ -15,3 +15,8 @@ API VERSION 2.0
   a function responsible for instantiating the PHP class that implements the
   AddressFieldLookupInterface interface. The function receives the service info
   array as a parameter.
+
+* The functions addressfield_lookup_get_addresses() and
+  addressfield_lookup_get_address_details() no longer accept a $show_errors
+  parameter. The 2nd parameter on both functions is now the cache reset
+  parameter. See addressfield_lookup.module for more details.

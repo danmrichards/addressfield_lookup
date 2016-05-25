@@ -129,6 +129,14 @@ class AddressFieldLookupWebTest extends AddressFieldLookupWebTestBase {
 
     // Test the fake service is not present.
     $this->assertFalse(isset($services[$fake_service_machine_name]));
+
+    // Test warning is shown if no service available.
+    module_disable(array('addressfield_lookup_example'));
+
+    // Get the status page to test the contents.
+    $this->getWithPermissions(array('administer site configuration'), 'admin/reports/status');
+    $this->assertText(t('None Available'));
+    $this->assertText(t('There is no default address field lookup service available. All address field lookup functionality will be disabled.'));
   }
 
   /**

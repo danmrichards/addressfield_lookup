@@ -165,7 +165,7 @@ function addressfield_lookup_services($reset = FALSE) {
     }
 
     // Allow other modules to alter the list of services.
-    drupal_alter('addressfield_lookup_service_info_alter', $addressfield_lookup_services);
+    drupal_alter('addressfield_lookup_service_info', $addressfield_lookup_services);
 
     // Loop through the defined services.
     foreach ($addressfield_lookup_services as $key => $addressfield_lookup_service) {

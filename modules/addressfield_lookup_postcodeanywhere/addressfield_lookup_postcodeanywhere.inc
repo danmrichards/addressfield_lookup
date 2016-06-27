@@ -20,12 +20,12 @@ class AddressFieldLookupPostcodeAnywhere implements AddressFieldLookupInterface 
   // endpoint and then keyed by the return data format.
   protected $endpoints = array(
     'Find' => array(
-      'xml' => 'services.postcodeanywhere.co.uk/PostcodeAnywhere/Interactive/Find/v1.10/xmla.ws',
-      'json' => 'services.postcodeanywhere.co.uk/PostcodeAnywhere/Interactive/Find/v1.10/json.ws',
+      'xml' => 'services.postcodeanywhere.co.uk/CapturePlus/Interactive/Find/v2.10/xmla.ws',
+      'json' => 'services.postcodeanywhere.co.uk/CapturePlus/Interactive/Find/v2.10/json.ws',
     ),
-    'RetrieveById' => array(
-      'xml' => 'services.postcodeanywhere.co.uk/PostcodeAnywhere/Interactive/RetrieveById/v1.30/xmla.ws',
-      'json' => 'services.postcodeanywhere.co.uk/PostcodeAnywhere/Interactive/RetrieveById/v1.30/json.ws',
+    'Retrieve' => array(
+      'xml' => 'services.postcodeanywhere.co.uk/CapturePlus/Interactive/Retrieve/v2.10/xmla.ws',
+      'json' => 'services.postcodeanywhere.co.uk/CapturePlus/Interactive/Retrieve/v2.10/json.ws',
     ),
   );
 
@@ -333,8 +333,8 @@ class AddressFieldLookupPostcodeAnywhere implements AddressFieldLookupInterface 
     foreach ($parsed_api_response as $parsed_api_response_item) {
       $results[] = array(
         'id' => $parsed_api_response_item->Id,
-        'street' => $parsed_api_response_item->StreetAddress,
-        'place' => $parsed_api_response_item->Place,
+        'street' => trim(preg_replace("/{$term}\,/si", '', $parsed_api_response_item->Text)),
+        'place' => '',
       );
     }
 
@@ -351,7 +351,7 @@ class AddressFieldLookupPostcodeAnywhere implements AddressFieldLookupInterface 
     );
 
     // Get the raw API result.
-    $api_response = $this->callApi('RetrieveById', $address_details_params);
+    $api_response = $this->callApi('Retrieve', $address_details_params);
 
     // Bail out if there was no response.
     if (!isset($api_response)) {
@@ -396,8 +396,8 @@ class AddressFieldLookupPostcodeAnywhere implements AddressFieldLookupInterface 
     $address_details['thoroughfare'] = '';
 
     // Thoroughfare: Street 1.
-    if (!empty($parsed_api_response[0]->PrimaryStreet)) {
-      $address_details['thoroughfare'] .= $parsed_api_response[0]->PrimaryStreet . ' ';
+    if (!empty($parsed_api_response[0]->Street)) {
+      $address_details['thoroughfare'] .= $parsed_api_response[0]->Street . ' ';
     }
 
     // Thoroughfare: Street 2.
@@ -408,30 +408,19 @@ class AddressFieldLookupPostcodeAnywhere implements AddressFieldLookupInterface 
     // Premise: Remove white space.
     $address_details['thoroughfare'] = trim($address_details['thoroughfare']);
 
-    // Dependent locality.
-    $address_details['dependent_locality'] = '';
-
-    // Dependent locality: Initial dependent locality.
-    if (!empty($parsed_api_response[0]->DependentLocality)) {
-      $address_details['dependent_locality'] .= $parsed_api_response[0]->DependentLocality . ' ';
+    // Dependent locality: Administrative area.
+    if (!empty($parsed_api_response[0]->AdminAreaName)) {
+      $address_details['dependent_locality'] = $parsed_api_response[0]->AdminAreaName;
     }
-
-    // Dependent locality: Double dependent locality.
-    if (!empty($parsed_api_response[0]->DoubleDependentLocality)) {
-      $address_details['dependent_locality'] .= $parsed_api_response[0]->DoubleDependentLocality . ' ';
-    }
-
-    // Dependent locality: Remove white space.
-    $address_details['dependent_locality'] = trim($address_details['dependent_locality']);
 
     // Locality.
-    $address_details['locality'] = isset($parsed_api_response[0]->PostTown) ? $parsed_api_response[0]->PostTown : '';
+    $address_details['locality'] = isset($parsed_api_response[0]->City) ? $parsed_api_response[0]->City : '';
 
     // Postal code.
-    $address_details['postal_code'] = isset($parsed_api_response[0]->Postcode) ? $parsed_api_response[0]->Postcode : '';
+    $address_details['postal_code'] = isset($parsed_api_response[0]->PostalCode) ? $parsed_api_response[0]->PostalCode : '';
 
     // Administrative area.
-    $address_details['administrative_area'] = isset($parsed_api_response[0]->County) ? $parsed_api_response[0]->County : '';
+    $address_details['administrative_area'] = isset($parsed_api_response[0]->Province) ? $parsed_api_response[0]->Province : '';
 
     // Organisation name.
     $address_details['organisation_name'] = isset($parsed_api_response[0]->Company) ? $parsed_api_response[0]->Company : '';

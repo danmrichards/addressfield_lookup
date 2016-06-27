@@ -473,7 +473,11 @@ function _addressfield_lookup_prepare_options(array $addresses) {
   // Prepare the options.
   if (!empty($addresses)) {
     foreach ($addresses as $address) {
-      $address_options[$address['id']] = $address['street'] . ', ' . $address['place'];
+      $address_options[$address['id']] = $address['street'];
+
+      if (!empty($address['place'])) {
+        $address_options[$address['id']] .= ', ' . $address['place'];
+      }
     }
   }
 

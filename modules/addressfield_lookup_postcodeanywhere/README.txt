@@ -6,13 +6,13 @@ the Address Field Lookup module.
 
 SUPPORTED SERVICES
 ------------------
-This module currently supported the following Postcode Anywhere Services
+This module currently supported the following PCA Predict Services
 
-POSTCODEANYWHERE INTERACTIVE FIND (V1.10)
------------------------------------------
+CAPTUREPLUS INTERACTIVE FIND (V2.10)
+------------------------------------
 Documentation can be found here:
 
-http://www.pcapredict.com/support/webservice/serviceslist/postcodeanywhere
+http://www.pcapredict.com/support/webservice/captureplus/interactive/find/2.1/
 
 The following formats are supported:
 

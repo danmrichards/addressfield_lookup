@@ -533,3 +533,16 @@ function _addressfield_lookup_populate_addressfield($address_id, $element, &$for
     }
   }
 }
+
+/**
+ * Check if a country address format has a usable postcode field.
+ *
+ * @param array $format
+ *   The country address format being checked.
+ *
+ * @return bool
+ *   Does the country format have a usable postcode field.
+ */
+function _addressfield_lookup_country_format_has_postal_code(array $format) {
+  return !empty($format['locality_block']['postal_code']) && $format['locality_block']['postal_code']['#access'] === TRUE;
+}

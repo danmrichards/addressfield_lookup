@@ -18,8 +18,9 @@ $plugin = array(
  * @see CALLBACK_addressfield_format_callback()
  */
 function addressfield_lookup_addressfield_format_generate(&$format, &$address, $context = array()) {
-  // Only run in when the address field form is shown.
-  if ($context['mode'] == 'form') {
+  // Only run in when the address field form is shown and the currently
+  // selected country has a useable postcode field.
+  if ($context['mode'] == 'form' && _addressfield_lookup_country_format_has_postal_code($format)) {
     // Check there is a default 'address field lookup service'.
     if (addressfield_lookup_get_default_service()) {
       // Get the address wrapper ID.

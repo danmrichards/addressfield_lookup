@@ -36,7 +36,7 @@ class PCAPredictAdapter extends PCAPredict {
     // Build array of parameters to pass to the API.
     $params = array(
       'SearchTerm' => $term,
-      'Filter' => $this->filter,
+      'SearchFor' => $this->filter,
       'Country' => $this->country,
     );
 

@@ -73,7 +73,12 @@ abstract class PCAPredict {
    *
    * @var array
    */
-  protected $allowedFilters = array('None', 'OnlyResidential', 'OnlyCommercial');
+  protected $allowedFilters = array(
+    'Everything',
+    'PostalCodes',
+    'Companies',
+    'Places',
+  );
 
   /**
    * List of valid return formats for the PCA Predict API.
@@ -104,7 +109,7 @@ abstract class PCAPredict {
    * @param string $country
    *   ISO2 code of the country to search in.
    */
-  public function __construct($key, $user_name, $preferred_language, $filter = 'None', $country = 'GB') {
+  public function __construct($key, $user_name, $preferred_language, $filter = 'PostalCodes', $country = 'GB') {
     // Set API credentials.
     $this->key = $key;
     $this->userName = $user_name;

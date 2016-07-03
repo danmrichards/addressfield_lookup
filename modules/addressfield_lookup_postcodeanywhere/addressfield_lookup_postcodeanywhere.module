@@ -65,7 +65,7 @@ function addressfield_lookup_postcodeanywhere_create($service_info, $country = '
 
   // Instantiate the API class.
   if (!isset($postcode_anywhere_service[$country])) {
-    $pca_predict = new PCAPredictAdapter(variable_get('addressfield_lookup_postcodeanywhere_license', NULL), variable_get('addressfield_lookup_postcodeanywhere_login', NULL), $language->name, 'None', $country);
+    $pca_predict = new PCAPredictAdapter(variable_get('addressfield_lookup_postcodeanywhere_license', NULL), variable_get('addressfield_lookup_postcodeanywhere_login', NULL), $language->name, 'PostalCodes', $country);
     $postcode_anywhere_service[$country] = new $service_info['class']($pca_predict);
   }
 

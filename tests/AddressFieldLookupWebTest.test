@@ -25,6 +25,13 @@ class AddressFieldLookupWebTest extends AddressFieldLookupWebTestBase {
   protected $invalidSearchTerm = 'FK4 4KE';
 
   /**
+   * An invalid country code to use for address lookups.
+   *
+   * @var string
+   */
+  protected $invalidCountryCode = 'XX';
+
+  /**
    * {@inheritdoc}
    */
   public static function getInfo() {
@@ -174,6 +181,12 @@ class AddressFieldLookupWebTest extends AddressFieldLookupWebTestBase {
 
     // Test with an invalid search term.
     $addresses = addressfield_lookup_get_addresses($this->invalidSearchTerm);
+
+    // Check there is not a result.
+    $this->assertTrue(is_array($addresses) && empty($addresses));
+
+    // Test with a valid country code.
+    $addresses = addressfield_lookup_get_addresses($this->validSearchTerm, $this->invalidCountryCode);
 
     // Check there is not a result.
     $this->assertTrue(is_array($addresses) && empty($addresses));

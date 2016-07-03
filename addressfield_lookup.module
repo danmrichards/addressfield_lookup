@@ -235,10 +235,13 @@ function addressfield_lookup_get_default_service() {
 /**
  * Get the instantiated default addressfield lookup service object.
  *
+ * @param string $country
+ *   ISO2 code of the country to get addresses in.
+ *
  * @return mixed
  *   The instantiated default addressfield lookup service object or FALSE.
  */
-function addressfield_lookup_get_default_service_object() {
+function addressfield_lookup_get_default_service_object($country = NULL) {
   // Get the default service object.
   $addressfield_lookup_service = addressfield_lookup_get_default_service();
 
@@ -248,7 +251,7 @@ function addressfield_lookup_get_default_service_object() {
   }
 
   // Try to instantiate the service object.
-  if ($addressfield_lookup_service_object = call_user_func($addressfield_lookup_service['object factory'], $addressfield_lookup_service)) {
+  if ($addressfield_lookup_service_object = call_user_func($addressfield_lookup_service['object factory'], $addressfield_lookup_service, $country)) {
     return $addressfield_lookup_service_object;
   }
 
@@ -261,6 +264,8 @@ function addressfield_lookup_get_default_service_object() {
  *
  * @param string $search_term
  *   Search term to lookup addresses for.
+ * @param string $country
+ *   ISO2 code of the country to get addresses in.
  * @param bool $reset
  *   Force a reset of the addresses cache for this search term.
  *
@@ -270,10 +275,7 @@ function addressfield_lookup_get_default_service_object() {
  *     street - Street (Address Line 1)
  *     place - Remainder of address.
  */
-function addressfield_lookup_get_addresses($search_term, $reset = FALSE) {
-  // TODO: Add new parameter for country code. Needs to be passed through
-  // to the service object for lookups.
-
+function addressfield_lookup_get_addresses($search_term, $country = NULL, $reset = FALSE) {
   // Bail out early if we have no search term.
   if (empty($search_term)) {
     return FALSE;
@@ -311,7 +313,7 @@ function addressfield_lookup_get_addresses($search_term, $reset = FALSE) {
   // There is no static or Drupal cache data. Do the lookup.
   try {
     // Get the default service object.
-    if ($addressfield_lookup_service_object = addressfield_lookup_get_default_service_object()) {
+    if ($addressfield_lookup_service_object = addressfield_lookup_get_default_service_object($country)) {
       // Do the search.
       if ($lookup_results = $addressfield_lookup_service_object->lookup($search_term)) {
         $addresses[$search_term] = $lookup_results;

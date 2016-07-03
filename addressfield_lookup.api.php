@@ -15,7 +15,8 @@
  *     - 'class' A string specifying the PHP class that implements the
  *       AddressFieldLookupInterface interface.
  *     - 'object factory' A function responsible for instantiating the PHP
- *       class defined above. Takes this config array as a parameter.
+ *       class defined above. Takes this config array and a country code as
+ *       parameters.
  *     - 'description' A brief description of the address field lookup service.
  *     - 'config path' The path to the configuration form for this service. The
  *       path will be used as an inline link on the address field lookup module

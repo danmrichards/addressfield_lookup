@@ -43,15 +43,17 @@ function addressfield_lookup_postcodeanywhere_addressfield_lookup_service_info()
 /**
  * Factory function: creates the postcode anywhere lookup service object.
  *
+ * @param array $service_info
+ *   Config array describing the lookup service.
+ * @param string $country
+ *   ISO2 code of the country to get addresses in.
+ *
  * @return AddressFieldLookupInterface
  *   The instantiated lookup class.
  *
  * @see hook_addressfield_lookup_service_info()
  */
-function addressfield_lookup_postcodeanywhere_create($service_info) {
-  // TODO: Update to accept a country code as a parameter and pass to the
-  // adapater class.
-
+function addressfield_lookup_postcodeanywhere_create($service_info, $country = NULL) {
   global $language;
 
   $postcode_anywhere_service = &drupal_static(__FUNCTION__);
@@ -63,6 +65,7 @@ function addressfield_lookup_postcodeanywhere_create($service_info) {
 
   // Instantiate the API class.
   if (!isset($postcode_anywhere_service)) {
+    // TODO: Update to accept a country code as a parameter.
     $pca_predict = new PCAPredictAdapter(variable_get('addressfield_lookup_postcodeanywhere_license', NULL), variable_get('addressfield_lookup_postcodeanywhere_login', NULL), $language->name);
     $postcode_anywhere_service = new $service_info['class']($pca_predict);
   }

@@ -83,6 +83,13 @@ abstract class PCAPredict {
   protected $validFormats = array('xmla', 'json');
 
   /**
+   * The ISO2 code of the country to search in.
+   *
+   * @var string
+   */
+  protected $country;
+
+  /**
    * Constructor.
    *
    * @param string $key
@@ -94,8 +101,10 @@ abstract class PCAPredict {
    *   The language version of the address to return.
    * @param string $filter
    *   The filter to apply to the output.
+   * @param string $country
+   *   ISO2 code of the country to search in.
    */
-  public function __construct($key, $user_name, $preferred_language, $filter = 'None') {
+  public function __construct($key, $user_name, $preferred_language, $filter = 'None', $country = 'GB') {
     // Set API credentials.
     $this->key = $key;
     $this->userName = $user_name;
@@ -117,6 +126,9 @@ abstract class PCAPredict {
       // Not a valid filter.
       throw new Exception('Requested filter not supported by PCA Predict API.');
     }
+
+    // Set the country to search in.
+    $this->country = $country;
   }
 
   /**

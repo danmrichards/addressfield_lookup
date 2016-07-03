@@ -46,7 +46,7 @@ function addressfield_lookup_addressfield_format_generate(&$format, &$address, $
         // Check if there is already an address.
         if (!empty($address['postal_code']) && !empty($address['locality'])) {
           // Check if we already have some address results.
-          $addresses = addressfield_lookup_get_addresses($address['postal_code']);
+          $addresses = addressfield_lookup_get_addresses($address['postal_code'], $address['country']);
 
           // We have a valid postal code and some addresses.
           if (!empty($addresses)) {
@@ -216,7 +216,7 @@ function addressfield_lookup_addressfield_house_number_validate($element, &$form
     $address = drupal_array_get_nested_value($form_state['values'], $array_parents);
 
     // Get the matching addresses.
-    $addresses = addressfield_lookup_get_addresses($address['addressfield_lookup_postal_code']);
+    $addresses = addressfield_lookup_get_addresses($address['addressfield_lookup_postal_code'], $address['country']);
 
     // Only validate if there are addresses.
     if (!empty($addresses)) {
@@ -252,8 +252,12 @@ function addressfield_lookup_addressfield_house_number_validate($element, &$form
 function addressfield_lookup_addressfield_postal_code_validate($element, &$form_state, &$form) {
   // Check there is a value to validate.
   if (!empty($element['#value'])) {
+    // Get the address element from the form.
+    $array_parents = array_slice($element['#parents'], 0, -1);
+    $address = drupal_array_get_nested_value($form_state['values'], $array_parents);
+
     // Perform an address lookup for this postcode.
-    $addresses = addressfield_lookup_get_addresses($element['#value']);
+    $addresses = addressfield_lookup_get_addresses($element['#value'], $address['country']);
 
     // Show an error if we have no results.
     if (empty($addresses)) {

@@ -271,6 +271,9 @@ function addressfield_lookup_get_default_service_object() {
  *     place - Remainder of address.
  */
 function addressfield_lookup_get_addresses($search_term, $reset = FALSE) {
+  // TODO: Add new parameter for country code. Needs to be passed through
+  // to the service object for lookups.
+
   // Bail out early if we have no search term.
   if (empty($search_term)) {
     return FALSE;

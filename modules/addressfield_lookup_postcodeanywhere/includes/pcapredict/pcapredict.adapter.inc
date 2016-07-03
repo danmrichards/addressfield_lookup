@@ -20,6 +20,7 @@ class PCAPredictAdapter extends PCAPredict {
   private $endpoints = array(
     'Find' => 'CapturePlus/Interactive/Find/v2.10',
     'Retrieve' => 'CapturePlus/Interactive/Retrieve/v2.10',
+    'CountryData' => 'Extras/Lists/CountryData/v3.00',
   );
 
   /**
@@ -62,6 +63,25 @@ class PCAPredictAdapter extends PCAPredict {
   public function retrieve($id) {
     // Get the raw API result.
     $api_response = $this->callApi($this->endpoints['Retrieve'], array('Id' => $id));
+
+    // Bail out if there was no response.
+    if (!isset($api_response)) {
+      return FALSE;
+    }
+
+    // Parse the API repsonse.
+    return $this->parseApiResponse($api_response);
+  }
+
+  /**
+   * Returns the suppported country data.
+   *
+   * @return mixed
+   *   The set of supported country data or FALSE.
+   */
+  public function getCountryData() {
+    // Get the raw API result.
+    $api_response = $this->callApi($this->endpoints['CountryData']);
 
     // Bail out if there was no response.
     if (!isset($api_response)) {

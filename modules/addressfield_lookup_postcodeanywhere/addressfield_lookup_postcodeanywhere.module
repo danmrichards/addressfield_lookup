@@ -49,6 +49,9 @@ function addressfield_lookup_postcodeanywhere_addressfield_lookup_service_info()
  * @see hook_addressfield_lookup_service_info()
  */
 function addressfield_lookup_postcodeanywhere_create($service_info) {
+  // TODO: Update to accept a country code as a parameter and pass to the
+  // adapater class.
+
   global $language;
 
   $postcode_anywhere_service = &drupal_static(__FUNCTION__);
@@ -101,23 +104,100 @@ function addressfield_lookup_postcodeanywhere_addressfield_lookup_format_update(
     $format['street_block']['premise']['#title'] = t('House Name/Building');
   }
   else {
-    // This is not a GB address.
-    // Remove all address field lookup elements.
-    foreach ($format as $element_name => $element) {
-      if (stristr($element_name, 'addressfield_lookup')) {
-        unset($format[$element_name]);
+    // Remove all address field lookup elements if this is not a country that
+    // is supported by the PCA Predict API.
+    if (empty($address['country']) || !addressfield_lookup_postcodeanywhere_is_country_supported($address['country'])) {
+      foreach ($format as $element_name => $element) {
+        if (stristr($element_name, 'addressfield_lookup')) {
+          unset($format[$element_name]);
+        }
       }
+
+      // Reset the address field lookup mode.
+      unset($address['addressfield_lookup_mode']);
+
+      // Ensure all normal address elements are visible.
+      $format['street_block']['#access'] = TRUE;
+      $format['locality_block']['#access'] = TRUE;
+      $format['name_block']['#access'] = TRUE;
+      $format['organisation_block']['#access'] = TRUE;
     }
-
-    // Reset the address field lookup mode.
-    unset($address['addressfield_lookup_mode']);
-
-    // Ensure all normal address elements are visible.
-    $format['street_block']['#access'] = TRUE;
-    $format['locality_block']['#access'] = TRUE;
-    $format['name_block']['#access'] = TRUE;
-    $format['organisation_block']['#access'] = TRUE;
   }
 
   return $format;
+}
+
+/**
+ * Is the country supported by the postcode anywhere API?
+ *
+ * @param string $country
+ *   ISO Country code.
+ *
+ * @return bool
+ *   Is the country in the supported list.
+ */
+function addressfield_lookup_postcodeanywhere_is_country_supported($country) {
+  return in_array($country, array_keys(_addressfield_lookup_postcodeanywhere_get_countries()));
+}
+
+/**
+ * Get the list of supported countries from the PCA Predict API.
+ *
+ * @param int $quality
+ *   The level of quality the API provides, 1 (worst) to 5 (best).
+ *
+ * @return array
+ *   Array of ISO2 country codes.
+ */
+function _addressfield_lookup_postcodeanywhere_get_countries($quality = 4, $reset = FALSE) {
+  global $language;
+
+  $countries = &drupal_static(__FUNCTION__);
+
+  // Check if we have statically cached countries and no reset flag was passed.
+  if (isset($countries) && !$reset) {
+    return $countries;
+  }
+
+  // Build the cache ID we'll use for the countries list.
+  $countries_cache_id = 'pcapredict:countries:' . $quality;
+
+  // Check the cache bin for the address details.
+  if (($cached_countries = cache_get($countries_cache_id, 'cache_addressfield_lookup_postcodeanywhere_country_data')) && !$reset) {
+    $countries = $cached_countries->data;
+    return $countries;
+  }
+
+  // Check the postcode anywhere configuration variables exist.
+  if (!variable_get('addressfield_lookup_postcodeanywhere_license', NULL)) {
+    throw new Exception('Postcode Anywhere has not been configured.');
+  }
+
+  // Get the API wrapper.
+  $pca_predict = new PCAPredictAdapter(variable_get('addressfield_lookup_postcodeanywhere_license', NULL), variable_get('addressfield_lookup_postcodeanywhere_login', NULL), $language->name);
+
+  // Get and parse the countries list.
+  $api_countries = $pca_predict->getCountryData();
+
+  if (!is_array($api_countries)) {
+    return FALSE;
+  }
+
+  // Filter by the quality parameter.
+  $api_countries = array_filter($api_countries, function ($api_country) use ($quality) {
+    return $api_country->Addressing >= $quality;
+  });
+
+  // Build out countries list.
+  $countries = array();
+
+  foreach ($api_countries as $api_country) {
+    $countries[$api_country->Country] = $api_country->Name;
+  }
+
+  // Cache the countries list. Note the missing cache length, we'll just keep
+  // this permanently until the next cache clear.
+  cache_set($countries_cache_id, $countries, 'cache_addressfield_lookup_postcodeanywhere_country_data');
+
+  return $countries;
 }

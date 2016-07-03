@@ -303,6 +303,11 @@ function addressfield_lookup_get_addresses($search_term, $country = NULL, $reset
   // service_name:hashed_search_term.
   $addresses_cache_id = $addressfield_lookup_default_service['machine_name'] . ':' . drupal_hash_base64($search_term);
 
+  // Append the country code to the cache ID if present.
+  if (!empty($country)) {
+    $addresses_cache_id .= ':' . $country;
+  }
+
   // Check the cache bin for the address details.
   if (($cached_addresses = cache_get($addresses_cache_id, 'cache_addressfield_lookup_addresses')) && !$reset) {
     // There is cached data so return it.

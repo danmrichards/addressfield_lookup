@@ -195,7 +195,7 @@ class AddressFieldLookupWebTest extends AddressFieldLookupWebTestBase {
   /**
    * Test the address details fetch functionality.
    */
-  public function testAddressFieldLookuGetAddressDetails() {
+  public function testAddressFieldLookupGetAddressDetails() {
     // Get some address results.
     $addresses = addressfield_lookup_get_addresses($this->validSearchTerm);
 

@@ -199,10 +199,10 @@ function addressfield_lookup_addressfield_format_generate(&$format, &$address, $
     else {
       watchdog('addressfield_lookup', 'Address field lookup handler could not initialise as there are no available lookup services.', array(), WATCHDOG_WARNING);
     }
-  }
 
-  // Get any format updates from the default address lookup service.
-  addressfield_lookup_get_format_updates($format, $address);
+    // Get any format updates from the default address lookup service.
+    addressfield_lookup_get_format_updates($format, $address);
+  }
 }
 
 /**
@@ -287,9 +287,9 @@ function addressfield_lookup_addressfield_postal_code_validate($element, &$form_
         $first_address_details = addressfield_lookup_get_address_details($addresses[0]['id']);
 
         // Set the common details.
-        $address['locality'] = isset($first_address_details['locality']) ? $first_address_details['locality'] : '';
-        $address['postal_code'] = isset($first_address_details['postal_code']) ? $first_address_details['postal_code'] : $element['#value'];
-        $address['administrative_area'] = isset($first_address_details['administrative_area']) ? $first_address_details['administrative_area'] : '';
+        $address['locality'] = !empty($first_address_details['locality']) ? $first_address_details['locality'] : '';
+        $address['postal_code'] = !empty($first_address_details['postal_code']) ? $first_address_details['postal_code'] : $element['#value'];
+        $address['administrative_area'] = !empty($first_address_details['administrative_area']) ? $first_address_details['administrative_area'] : '';
 
         // Update the form state, where possible.
         if (isset($address['element_key']) && isset($form_state['addressfield'][$address['element_key']])) {

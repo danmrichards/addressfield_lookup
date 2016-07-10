@@ -55,6 +55,7 @@ class AddressFieldLookupPostcodeAnywhere implements AddressFieldLookupInterface 
       // a marker to the result ID.
       if ($api_response_item->Next == 'Find') {
         $result['id'] .= '|Find';
+        $result['place'] = !empty($api_response_item->Description) ? '(' . $api_response_item->Description . ')' : '';
       }
 
       $results[] = $result;

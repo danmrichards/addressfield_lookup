@@ -155,6 +155,38 @@ function addressfield_lookup_addressfield_format_generate(&$format, &$address, $
           // After a search for postal code only.
           _addressfield_lookup_search_by_postal_code_button($format, $element_key, t('Search by another postal code'));
 
+          // Address selector if there are defined addresses for a postcode.
+          if (!empty($address['addressfield_lookup_addresses'])) {
+            // Build out the options list for the form element.
+            $addressfield_lookup_address_options = array('' => t('- Please select -'));
+
+            // Add the address from the service call.
+            $addressfield_lookup_address_options += $address['addressfield_lookup_addresses'];
+
+            // Build the drop down.
+            $format['addressfield_lookup_addresses_select'] = array(
+              '#type' => 'select',
+              '#title' => t('Select address for this postal code'),
+              '#options' => $addressfield_lookup_address_options,
+              '#default_value' => !empty($address['addressfield_lookup_addresses_select']) ? $address['addressfield_lookup_addresses_select'] : NULL,
+              '#element_validate' => array('addressfield_lookup_addresses_select_validate'),
+              '#ajax' => array(
+                'callback' => 'addressfield_standard_widget_refresh',
+                'wrapper' => $wrapper_id,
+              ),
+              '#render_option_value' => TRUE,
+              '#limit_validation_errors' => array(),
+              '#weight' => $format['country']['#weight'] + 2,
+            );
+
+            // Hidden variable for the address options.
+            $format['addressfield_lookup_addresses'] = array(
+              '#type' => 'value',
+              '#value' => $address['addressfield_lookup_addresses'],
+              '#weight' => $format['country']['#weight'] + 3,
+            );
+          }
+
           break;
 
         case 'cancel':
@@ -162,38 +194,6 @@ function addressfield_lookup_addressfield_format_generate(&$format, &$address, $
           _addressfield_lookup_search_by_postal_code_button($format, $element_key, t('Search by postal code'));
 
           break;
-      }
-
-      // Address selector if there are defined addresses for a postcode.
-      if (!empty($address['addressfield_lookup_addresses']) && $address['addressfield_lookup_mode'] == 'address_selection') {
-        // Build out the options list for the form element.
-        $addressfield_lookup_address_options = array('' => t('- Please select -'));
-
-        // Add the address from the service call.
-        $addressfield_lookup_address_options += $address['addressfield_lookup_addresses'];
-
-        // Build the drop down.
-        $format['addressfield_lookup_addresses_select'] = array(
-          '#type' => 'select',
-          '#title' => t('Select address for this postal code'),
-          '#options' => $addressfield_lookup_address_options,
-          '#default_value' => !empty($address['addressfield_lookup_addresses_select']) ? $address['addressfield_lookup_addresses_select'] : NULL,
-          '#element_validate' => array('addressfield_lookup_addresses_select_validate'),
-          '#ajax' => array(
-            'callback' => 'addressfield_standard_widget_refresh',
-            'wrapper' => $wrapper_id,
-          ),
-          '#render_option_value' => TRUE,
-          '#limit_validation_errors' => array(),
-          '#weight' => $format['country']['#weight'] + 2,
-        );
-
-        // Hidden variable for the address options.
-        $format['addressfield_lookup_addresses'] = array(
-          '#type' => 'value',
-          '#value' => $address['addressfield_lookup_addresses'],
-          '#weight' => $format['country']['#weight'] + 3,
-        );
       }
     }
     else {
@@ -288,7 +288,7 @@ function addressfield_lookup_addressfield_postal_code_validate($element, &$form_
 
         // Set the common details.
         $address['locality'] = isset($first_address_details['locality']) ? $first_address_details['locality'] : '';
-        $address['postal_code'] = isset($first_address_details['postal_code']) ? $first_address_details['postal_code'] : '';
+        $address['postal_code'] = isset($first_address_details['postal_code']) ? $first_address_details['postal_code'] : $element['#value'];
         $address['administrative_area'] = isset($first_address_details['administrative_area']) ? $first_address_details['administrative_area'] : '';
 
         // Update the form state, where possible.

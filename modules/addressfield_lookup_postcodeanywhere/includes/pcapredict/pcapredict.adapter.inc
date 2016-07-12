@@ -74,8 +74,14 @@ class PCAPredictAdapter extends PCAPredict {
    *   The address details or FALSE.
    */
   public function retrieve($id) {
+    // The first part of the ID is the actual address ID. The second part is the
+    // 'Next' operation returned by the API.
+    //
+    // @see http://www.pcapredict.com/support/webservice/captureplus/interactive/find/2.1/
+    $id_parts = explode(':', $id);
+
     // Get the raw API result.
-    $api_response = $this->callApi($this->endpoints['Retrieve'], array('Id' => $id));
+    $api_response = $this->callApi($this->endpoints['Retrieve'], array('Id' => $id_parts[0]));
 
     // Bail out if there was no response.
     if (!isset($api_response)) {

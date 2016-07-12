@@ -48,20 +48,13 @@ function addressfield_lookup_addressfield_format_generate(&$format, &$address, $
           // Check if we already have some address results.
           $addresses = addressfield_lookup_get_addresses($address['postal_code'], $address['country']);
 
-          // We have a valid postal code and some addresses.
-          if (!empty($addresses)) {
-            // Address defined, use the prefilled addressfield form.
-            if (!empty($address['thoroughfare'])) {
-              $address['addressfield_lookup_mode'] = 'address_selected';
-            }
-            else {
-              // Use the addresses selection for the given postal code.
-              $address['addressfield_lookup_mode'] = 'address_selection';
-            }
+          // Address defined, use the prefilled addressfield form.
+          if (!empty($address['thoroughfare'])) {
+            $address['addressfield_lookup_mode'] = 'address_selected';
           }
           else {
-            // We have no addresses, so we need to do a search.
-            $address['addressfield_lookup_mode'] = 'search';
+            // Use the addresses selection for the given postal code.
+            $address['addressfield_lookup_mode'] = 'address_selection';
           }
         }
         elseif (!empty($address['postal_code']) && !empty($address['thoroughfare'])) {

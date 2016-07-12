@@ -11,6 +11,30 @@
 abstract class PCAPredict {
 
   /**
+   * Indicator for a find operation.
+   *
+   * Matches a possible return value for the 'Next' field from the CapturePlus
+   * Interactive Find API endpoint.
+   *
+   * @var string
+   *
+   * @see http://www.pcapredict.com/support/webservice/captureplus/interactive/find/2.1/
+   */
+  const FIND_OPERATION = 'Find';
+
+  /**
+   * Indicator for retrieve operation.
+   *
+   * Matches a possible return value for the 'Next' field from the CapturePlus
+   * Interactive Find API endpoint.
+   *
+   * @var string
+   *
+   * @see http://www.pcapredict.com/support/webservice/captureplus/interactive/find/2.1/
+   */
+  const RETRIEVE_OPERATION = 'Retrieve';
+
+  /**
    * Root URL for the PCA Predict API.
    *
    * @var string

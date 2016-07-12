@@ -5,6 +5,9 @@
  * Contains AddressFieldLookupWebTest.
  */
 
+// TODO: Create another test class which actually tests the form/field API
+// interactions.
+
 /**
  * Defines a class for testing the Address Field Lookup module.
  */

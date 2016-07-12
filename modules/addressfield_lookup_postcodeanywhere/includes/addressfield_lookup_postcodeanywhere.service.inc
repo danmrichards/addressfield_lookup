@@ -45,18 +45,13 @@ class AddressFieldLookupPostcodeAnywhere implements AddressFieldLookupInterface 
     $results = array();
 
     foreach ($api_response as $api_response_item) {
+      // Build the result array. Note that we are building a composite ID from
+      // the actual Id value and the 'Next' operation.
       $result = array(
-        'id' => $api_response_item->Id,
+        'id' => $api_response_item->Id . ':' . $api_response_item->Next,
         'street' => trim(preg_replace("/{$term}\,/si", '', $api_response_item->Text)),
-        'place' => '',
+        'place' => !empty($api_response_item->Description) ? '(' . $api_response_item->Description . ')' : '',
       );
-
-      // If the API result indicated another 'Find' operation is needed, append
-      // a marker to the result ID.
-      if ($api_response_item->Next == 'Find') {
-        $result['id'] .= '|Find';
-        $result['place'] = !empty($api_response_item->Description) ? '(' . $api_response_item->Description . ')' : '';
-      }
 
       $results[] = $result;
     }

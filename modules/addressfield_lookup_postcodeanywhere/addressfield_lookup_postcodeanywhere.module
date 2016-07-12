@@ -84,30 +84,11 @@ function addressfield_lookup_postcodeanywhere_create($service_info, $country = '
  * Implements hook_addressfield_lookup_format_update().
  */
 function addressfield_lookup_postcodeanywhere_addressfield_lookup_format_update($format, $address) {
-  // We may need to trigger another find at this stage, so double check.
+  // We may need to trigger another find at this stage, so change the validate
+  // logic for the address selection element.
   if (isset($address['addressfield_lookup_mode']) && $address['addressfield_lookup_mode'] == 'address_selection') {
-    $extra_find_required = FALSE;
-
-    // Check each address result to see if the find flag is present.
-    foreach ($format['addressfield_lookup_addresses_select']['#options'] as $id => $text) {
-      // TODO: Refactor this to allow a mix of 'Find' and 'Retrieve' results.
-      // Perhaps by hi-jacking the element_validate of the results selector at
-      // all times. The checking if the ID contains a 'Find' string?
-      if (strstr($id, '|Find')) {
-        $extra_find_required = TRUE;
-        break;
-      }
-    }
-
-    if ($extra_find_required) {
-      // Alter the address select drop down.
-      $format['addressfield_lookup_addresses_select']['#title'] = t('More information is needed. Please select the area your postal code is in.');
-      $format['addressfield_lookup_addresses_select']['#element_validate'] = array('_addressfield_lookup_postcodeanywhere_extra_find_step');
-
-      // Hide normal address elements.
-      $format['street_block']['#access'] = FALSE;
-      $format['locality_block']['#access'] = FALSE;
-    }
+    $format['addressfield_lookup_addresses_select']['#ajax']['callback'] = 'addressfield_lookup_postcodeanywhere_standard_widget_refresh';
+    $format['addressfield_lookup_addresses_select']['#element_validate'] = array('_addressfield_lookup_postcodeanywhere_addresses_select_validate');
   }
 
   // Add new GB address elements if the address country is GB.
@@ -177,9 +158,46 @@ function addressfield_lookup_postcodeanywhere_is_country_supported($country) {
 }
 
 /**
- * Validate callback: Perform an additional find request against the API.
+ * Ajax callback in response to selecting a lookup result.
+ *
+ * @param array $form
+ *   An associative array containing the structure of the form.
+ * @param array $form_state
+ *   An associative array containing the current state of the form.
  */
-function _addressfield_lookup_postcodeanywhere_extra_find_step($element, &$form_state, &$form) {
+function addressfield_lookup_postcodeanywhere_standard_widget_refresh($form, $form_state) {
+  // The target element is one element below the triggering country selector.
+  $array_parents = $form_state['triggering_element']['#array_parents'];
+  array_pop($array_parents);
+
+  // Iterate over the form parents to find the element.
+  $element = $form;
+  foreach ($array_parents as $name) {
+    $element = &$element[$name];
+    if (!empty($element['#addressfield'])) {
+      break;
+    }
+  }
+
+  // Return the address block, but remove the '_weight' element inserted
+  // by the field API.
+  unset($element['_weight']);
+
+  // Display the current message queue in the element prefix.
+  $element['#prefix'] .= theme('status_messages');
+
+  // Replace the address field widget with the updated widget and focus on the
+  // new country select list.
+  $commands[] = ajax_command_replace(NULL, render($element));
+  $commands[] = ajax_command_invoke('#' . $element['country']['#id'], 'focus');
+
+  return array('#type' => 'ajax', '#commands' => $commands);
+}
+
+/**
+ * Validate callback: Check if the selected value requires extra find steps.
+ */
+function _addressfield_lookup_postcodeanywhere_addresses_select_validate($element, &$form_state, &$form) {
   // Check if this was the triggering element.
   if ($element['#id'] == $form_state['triggering_element']['#id']) {
     // Get the address element from the form.
@@ -187,55 +205,74 @@ function _addressfield_lookup_postcodeanywhere_extra_find_step($element, &$form_
     $address = drupal_array_get_nested_value($form_state['values'], $array_parents);
 
     if (!empty($element['#value'])) {
-      // Get the address ID.
-      $address_id = str_replace('|Find', '', $element['#value']);
+      // The first part of the ID is the actual address ID. The second part is
+      // the 'Next' operation returned by the API.
+      //
+      // @see http://www.pcapredict.com/support/webservice/captureplus/interactive/find/2.1/
+      $address_id_parts = explode(':', $element['#value']);
 
-      // Get the PCA Predict API object.
-      $addressfield_lookup_services = addressfield_lookup_services();
-      $pca_predict = addressfield_lookup_postcodeanywhere_create($addressfield_lookup_services['postcodeanywhere'], $address['country'], $address_id);
+      // Determine the action to take based on the ID parts.
+      switch ($address_id_parts[1]) {
+        case PCAPredict::FIND_OPERATION:
+          // The API response indicates an additional lookup step is required.
+          // Display a message to indicate this to the user.
+          drupal_set_message(t('More information is needed. Please select the area your postal code is in.'));
 
-      // Perform the extra lookup.
-      $addresses = addressfield_lookup_get_addresses($address['postal_code'], $address['country'], TRUE, TRUE);
+          // Get the PCA Predict API object.
+          $addressfield_lookup_services = addressfield_lookup_services();
+          $pca_predict = addressfield_lookup_postcodeanywhere_create($addressfield_lookup_services['postcodeanywhere'], $address['country'], $address_id_parts[0]);
 
-      // Ensure we have a valid result.
-      if (!is_array($addresses)) {
-        return FALSE;
-      }
+          // Perform the extra lookup.
+          $addresses = addressfield_lookup_get_addresses($address['postal_code'], $address['country'], TRUE, TRUE);
 
-      // Prepare list options from the lookup results.
-      $address['addressfield_lookup_addresses'] = _addressfield_lookup_prepare_options($addresses);
+          // Ensure we have a valid result.
+          if (!is_array($addresses)) {
+            return FALSE;
+          }
 
-      // Prefill the common details for each of the addresses (locality,
-      // postcode, administrative_area) on the form.
-      if (empty($address['addressfield_lookup_mode']) || $address['addressfield_lookup_mode'] != 'address_selected') {
-        // Reset the address to the default values.
-        _addressfield_lookup_default_values($address);
+          // Prepare list options from the lookup results.
+          $address['addressfield_lookup_addresses'] = _addressfield_lookup_prepare_options($addresses);
 
-        // Set the mode.
-        $address['addressfield_lookup_mode'] = 'address_selection';
+          // Prefill the common details for each of the addresses (locality,
+          // postcode, administrative_area) on the form.
+          if (empty($address['addressfield_lookup_mode']) || $address['addressfield_lookup_mode'] != 'address_selected') {
+            // Reset the address to the default values.
+            _addressfield_lookup_default_values($address);
 
-        // Get the full details of the 1st address in the results.
-        $first_address_details = addressfield_lookup_get_address_details($addresses[0]['id']);
+            // Set the mode.
+            $address['addressfield_lookup_mode'] = 'address_selection';
 
-        // Set the common details.
-        $address['locality'] = isset($first_address_details['locality']) ? $first_address_details['locality'] : '';
-        $address['postal_code'] = isset($first_address_details['postal_code']) ? $first_address_details['postal_code'] : $element['#value'];
-        $address['administrative_area'] = isset($first_address_details['administrative_area']) ? $first_address_details['administrative_area'] : '';
+            // Get the full details of the 1st address in the results.
+            $first_address_details = addressfield_lookup_get_address_details($addresses[0]['id']);
 
-        // Update the form state, where possible.
-        if (isset($address['element_key']) && isset($form_state['addressfield'][$address['element_key']])) {
-          $form_state['addressfield'][$address['element_key']] = array_diff_key($address, array('element_key' => ''));
-        }
+            // Set the common details.
+            $address['locality'] = isset($first_address_details['locality']) ? $first_address_details['locality'] : '';
+            $address['postal_code'] = isset($first_address_details['postal_code']) ? $first_address_details['postal_code'] : $address['postal_code'];
+            $address['administrative_area'] = isset($first_address_details['administrative_area']) ? $first_address_details['administrative_area'] : '';
 
-        // Set the address values on the form.
-        foreach ($address as $key => $value) {
-          // Update the form state for addressfield.
-          // Note: form_state['input'] must be updated so that
-          // addressfield_lookup_addressfield_format_generate() has correct
-          // information during the rebuild.
-          drupal_array_set_nested_value($form_state['values'], array_merge($array_parents, array($key)), $value, TRUE);
-          drupal_array_set_nested_value($form_state['input'], array_merge($array_parents, array($key)), $value, TRUE);
-        }
+            // Update the form state, where possible.
+            if (isset($address['element_key']) && isset($form_state['addressfield'][$address['element_key']])) {
+              $form_state['addressfield'][$address['element_key']] = array_diff_key($address, array('element_key' => ''));
+            }
+
+            // Set the address values on the form.
+            foreach ($address as $key => $value) {
+              // Update the form state for addressfield.
+              // Note: form_state['input'] must be updated so that
+              // addressfield_lookup_addressfield_format_generate() has correct
+              // information during the rebuild.
+              drupal_array_set_nested_value($form_state['values'], array_merge($array_parents, array($key)), $value, TRUE);
+              drupal_array_set_nested_value($form_state['input'], array_merge($array_parents, array($key)), $value, TRUE);
+            }
+          }
+
+          break;
+
+        case PCAPredict::RETRIEVE_OPERATION:
+          // Populate addressfield with the selected postal code address data.
+          _addressfield_lookup_populate_addressfield($element['#value'], $element, $form_state);
+
+          break;
       }
     }
   }

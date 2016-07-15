@@ -295,6 +295,7 @@ function _addressfield_lookup_postcodeanywhere_addresses_select_validate($elemen
  *
  * @param int $quality
  *   The level of quality the API provides, 1 (worst) to 5 (best).
+ *   TODO: Pull the default value from a variable.
  *
  * @return array
  *   Array of ISO2 country codes.

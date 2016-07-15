@@ -23,6 +23,9 @@ function addressfield_lookup_postcodeanywhere_config_form() {
     '#description' => t('API key to use to authenticate to Postcode Anywhere.'),
   );
 
+  // TODO: Add a new form field, and variable, for the supported countries
+  // data quality.
+
   // Add a custom submit function.
   $form['#submit'][] = 'addressfield_lookup_postcodeanywhere_config_form_submit';
 
@@ -33,5 +36,7 @@ function addressfield_lookup_postcodeanywhere_config_form() {
  * Form submit handler: Redirect back to the address field lookup services page.
  */
 function addressfield_lookup_postcodeanywhere_config_form_submit($form, &$form_state) {
+  // TODO: Show warning if supported countries data quality level is below 3.
+
   $form_state['redirect'] = 'admin/config/regional/addressfield-lookup';
 }

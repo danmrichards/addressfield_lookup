@@ -8,6 +8,7 @@ files[] = addressfield_lookup.interface.inc
 files[] = tests/AddressFieldLookupWebTestBase.test
 files[] = tests/AddressFieldLookupWebTest.test
 files[] = tests/AddressFieldLookupAdminWebTest.test
+files[] = tests/AddressFieldLookupFieldTest.test
 
 dependencies[] = addressfield
 dependencies[] = ctools

@@ -1,0 +1,70 @@
+<?php
+
+/**
+ * @file
+ * Contains AddressFieldLookupFieldTest.
+ */
+
+/**
+ * Defines a class for testing field interactions for Address Field Lookup.
+ */
+class AddressFieldLookupFieldTest extends AddressFieldLookupWebTestBase {
+
+  /**
+   * Name of the test address field.
+   *
+   * @var string
+   */
+  protected $testFieldName = 'field_address';
+
+  /**
+   * Settings for our test content type.
+   *
+   * @var array
+   */
+  protected $testContentType = array(
+    'machine_name' => 'shop',
+    'name' => 'Shop',
+  );
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => 'Field functionality tests',
+      'description' => 'Tests the field interactions of the Address Field Lookup module.',
+      'group' => 'Address Field Lookup',
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp() {
+    parent::setUp();
+
+    // Create a node type for testing.
+    $this->drupalCreateContentType(array('type' => $this->testContentType['machine_name'], 'name' => $this->testContentType['name']));
+
+    // Attach the address field.
+    $this->createAttachAddressLookupField($this->testFieldName, 'node', $this->testContentType['machine_name']);
+  }
+
+  /**
+   * Test the address field lookup interaction with the create node form.
+   */
+  public function testAddressFieldLookupNodeCreate() {
+    // Check permissions and get page contents.
+    $this->getWithPermissions(array("create {$this->testContentType['machine_name']} content"), "node/add/{$this->testContentType['machine_name']}");
+
+    // Set the language code.
+    $langcode = LANGUAGE_NONE;
+
+    // Check the correct field elements exist.
+    $this->assertFieldByName("{$this->testFieldName}[{$langcode}][0][addressfield_lookup_house_number]", '', 'House number or name field is displayed');
+    $this->assertFieldByName("{$this->testFieldName}[{$langcode}][0][addressfield_lookup_postal_code]", '', 'Postal code field is displayed');
+    $this->assertFieldByName("node_{$this->testContentType['machine_name']}_{$this->testFieldName}_und_0-addressfield_lookup_cancel", t('Do not know the postcode'), 'Cancel button is displayed');
+    $this->assertFieldByName("node_{$this->testContentType['machine_name']}_{$this->testFieldName}_und_0-addressfield_lookup_find_address", t('Find address'), 'Find address button is displayed');
+  }
+}

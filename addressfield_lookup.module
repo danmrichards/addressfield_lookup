@@ -309,10 +309,10 @@ function addressfield_lookup_get_addresses($search_term, $country = NULL, $reset
     $addresses_cache_id .= ':' . $country;
   }
 
-  // Allow other modules to alter the cache ID. We create a copy of the country
-  // value as we just want it for context and not actually alter it.
-  $country_copy = $country;
-  drupal_alter('addressfield_lookup_get_addresses_cache_id', $addresses_cache_id, $country_copy);
+  // Allow the default service module to alter the cache ID.
+  if ($updated_cache_id = module_invoke($addressfield_lookup_default_service['module'], 'addressfield_lookup_get_addresses_cache_id_update', $addresses_cache_id, $country)) {
+    $addresses_cache_id = $updated_cache_id;
+  }
 
   // Check the cache bin for the address details.
   if (($cached_addresses = cache_get($addresses_cache_id, 'cache_addressfield_lookup_addresses')) && !$reset) {

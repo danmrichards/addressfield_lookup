@@ -24,22 +24,17 @@ class PCAPredictAdapter extends PCAPredict {
   );
 
   /**
-   * The Id from a previous Find or FindByPosition.
-   *
-   * @var string
-   */
-  protected $lastId = NULL;
-
-  /**
    * Find addresses matching the search term.
    *
    * @param string $term
    *   The search term.
+   * @param string $lastId
+   *   The Id from a previous Find or FindByPosition.
    *
    * @return mixed
    *   Array of addresses or FALSE;
    */
-  public function find($term) {
+  public function find($term, $lastId) {
     // Build array of parameters to pass to the API.
     $params = array(
       'SearchTerm' => $term,
@@ -48,8 +43,8 @@ class PCAPredictAdapter extends PCAPredict {
     );
 
     // Add the last ID param if present.
-    if (!is_null($this->lastId)) {
-      $params['LastId'] = $this->lastId;
+    if (!is_null($lastId)) {
+      $params['LastId'] = $lastId;
     }
 
     // Get the raw API result.
@@ -109,21 +104,6 @@ class PCAPredictAdapter extends PCAPredict {
 
     // Parse the API repsonse.
     return $this->parseApiResponse($api_response);
-  }
-
-  /**
-   * Set the last Id vakue.
-   *
-   * @param string $last_id
-   *   String containing the The Id from a previous Find.
-   *
-   * @return AddressFieldLookupInterface
-   *   The called object.
-   */
-  public function setLastId($last_id) {
-    $this->lastId = $last_id;
-
-    return $this;
   }
 
 }

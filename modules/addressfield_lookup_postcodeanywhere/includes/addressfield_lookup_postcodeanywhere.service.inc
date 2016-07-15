@@ -21,6 +21,13 @@ class AddressFieldLookupPostcodeAnywhere implements AddressFieldLookupInterface 
   protected $api;
 
   /**
+   * The Id from a previous Find or FindByPosition.
+   *
+   * @var string
+   */
+  protected $lastId = NULL;
+
+  /**
    * Constructor.
    *
    * @param PCAPredict $api
@@ -35,7 +42,7 @@ class AddressFieldLookupPostcodeAnywhere implements AddressFieldLookupInterface 
    */
   public function lookup($term) {
     // Get the API result.
-    $api_response = $this->api->find($term);
+    $api_response = $this->api->find($term, $this->lastId);
 
     if (!is_array($api_response)) {
       return FALSE;
@@ -130,6 +137,31 @@ class AddressFieldLookupPostcodeAnywhere implements AddressFieldLookupInterface 
     $address_details['organisation_name'] = isset($api_response[0]->Company) ? $api_response[0]->Company : '';
 
     return $address_details;
+  }
+
+  /**
+   * Set the last Id value.
+   *
+   * @param string $last_id
+   *   String containing the The Id from a previous Find.
+   *
+   * @return AddressFieldLookupInterface
+   *   The called object.
+   */
+  public function setLastId($last_id) {
+    $this->lastId = $last_id;
+
+    return $this;
+  }
+
+  /**
+   * Get the last Id value.
+   *
+   * @return string $last_id
+   *   String containing the The Id from a previous Find.
+   */
+  public function getLastId() {
+    return $this->lastId;
   }
 
 }

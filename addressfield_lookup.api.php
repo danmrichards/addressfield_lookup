@@ -55,30 +55,6 @@ function hook_addressfield_lookup_service_info_alter(array &$addressfield_lookup
 }
 
 /**
- * Alter the postcode before the lookup service search is run.
- *
- * @param string $post_code
- *   The postcode from the address field handler.
- */
-function hook_addressfield_lookup_postcode_alter(&$post_code) {
-  // Strip out spaces and force uppercase.
-  $post_code = drupal_strtoupper(preg_replace('/\s/si', '', $post_code));
-}
-
-/**
- * Alter the results of an address field lookup search.
- *
- * @param array $results
- *   Array containing the lookup search results.
- */
-function hook_addressfield_lookup_results_alter(array &$results) {
-  // Add a full address string to each result.
-  foreach ($results as $key => $result) {
-    $results[$key]['full_address'] = $results[$key]['street'] . ' ' . $results[$key]['place'];
-  }
-}
-
-/**
  * Update/alter the addressfield format defined by addressfield_lookup.
  *
  * @param array $format
@@ -88,10 +64,30 @@ function hook_addressfield_lookup_results_alter(array &$results) {
  *
  * @return array $format
  *   The address format with any changes made.
+ *
+ * @see addressfield_lookup_addressfield_format_generate
+ * @see addressfield_lookup_get_format_updates
  */
 function hook_addressfield_lookup_format_update(array $format, array $address) {
   // Re-order the premise element.
   $format['street_block']['premise']['#weight'] = -9;
 
   return $format;
+}
+
+/**
+ * Alter the cache ID used during the get addresses phase.
+ *
+ * @param string $cache_id
+ *   The cache ID used during the get addresses phase.
+ * @param string $country
+ *   ISO2 code of the country to get addresses in.
+ *
+ * @see addressfield_lookup_get_addresses
+ */
+function hook_addressfield_lookup_get_addresses_cache_id_alter(&$cache_id, &$country) {
+  global $user;
+
+  // Append the current user ID to the cache ID.
+  $cache_id .= ':' . $user->uid;
 }

@@ -34,7 +34,7 @@ class PCAPredictAdapter extends PCAPredict {
    * @return mixed
    *   Array of addresses or FALSE;
    */
-  public function find($term, $lastId) {
+  public function find($term, $lastId = NULL) {
     // Build array of parameters to pass to the API.
     $params = array(
       'SearchTerm' => $term,

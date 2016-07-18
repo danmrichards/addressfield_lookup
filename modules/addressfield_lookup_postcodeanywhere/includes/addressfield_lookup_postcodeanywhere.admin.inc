@@ -23,8 +23,14 @@ function addressfield_lookup_postcodeanywhere_config_form() {
     '#description' => t('API key to use to authenticate to Postcode Anywhere.'),
   );
 
-  // TODO: Add a new form field, and variable, for the supported countries
-  // data quality.
+  $form['addressfield_lookup_postcodeanywhere_country_quality'] = array(
+    '#title' => t('Minimum addressing quality'),
+    '#type' => 'select',
+    '#options' => array_combine(range(1, 5), range(1, 5)),
+    '#default_value' => variable_get('addressfield_lookup_postcodeanywhere_country_quality', 4),
+    '#description' => t('The minimum quality value (1 least to 5 most) of address data required. This quality value is used to filter supported countries pulled from <a href="@country_url" target="_blank">PCA Predict</a>', array('@country_url' => 'https://www.pcapredict.com/support/webservice/extras/lists/countrydata/3')),
+    '#element_validate' => array('element_validate_integer_positive'),
+  );
 
   // Add a custom submit function.
   $form['#submit'][] = 'addressfield_lookup_postcodeanywhere_config_form_submit';
@@ -36,7 +42,10 @@ function addressfield_lookup_postcodeanywhere_config_form() {
  * Form submit handler: Redirect back to the address field lookup services page.
  */
 function addressfield_lookup_postcodeanywhere_config_form_submit($form, &$form_state) {
-  // TODO: Show warning if supported countries data quality level is below 3.
+  // Show warning if supported countries data quality level is below 3.
+  if ($form_state['values']['addressfield_lookup_postcodeanywhere_country_quality'] < 3) {
+    drupal_set_message(t('You have selected an addressing quality below 4. This is not recommended and could result in poor quality address lookups.'), 'warning');
+  }
 
   $form_state['redirect'] = 'admin/config/regional/addressfield-lookup';
 }

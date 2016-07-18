@@ -293,14 +293,13 @@ function _addressfield_lookup_postcodeanywhere_addresses_select_validate($elemen
 /**
  * Get the list of supported countries from the PCA Predict API.
  *
- * @param int $quality
- *   The level of quality the API provides, 1 (worst) to 5 (best).
- *   TODO: Pull the default value from a variable.
+ * @param bool $reset
+ *   Reset the country data static cache.
  *
  * @return array
  *   Array of ISO2 country codes.
  */
-function _addressfield_lookup_postcodeanywhere_get_countries($quality = 4, $reset = FALSE) {
+function _addressfield_lookup_postcodeanywhere_get_countries($reset = FALSE) {
   global $language;
 
   $countries = &drupal_static(__FUNCTION__);
@@ -309,6 +308,9 @@ function _addressfield_lookup_postcodeanywhere_get_countries($quality = 4, $rese
   if (isset($countries) && !$reset) {
     return $countries;
   }
+
+  // Get the quality setting.
+  $quality = variable_get('addressfield_lookup_postcodeanywhere_country_quality', 4);
 
   // Build the cache ID we'll use for the countries list.
   $countries_cache_id = 'pcapredict:countries:' . $quality;

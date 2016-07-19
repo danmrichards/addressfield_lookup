@@ -23,3 +23,24 @@ function addressfield_lookup_postcodeanywhere_schema() {
 function addressfield_lookup_postcodeanywhere_update_7000() {
   drupal_install_schema('addressfield_lookup_postcodeanywhere');
 }
+
+/**
+ * Implements hook_update_N().
+ *
+ * Migrate postcode anywhere config variables.
+ */
+function addressfield_lookup_postcodeanywhere_update_7001() {
+  // Login.
+  $postcodeanywhere_login = variable_get('postcodeanywhere_login', NULL);
+  if (!is_null($postcodeanywhere_login) && is_null(variable_get('addressfield_lookup_postcodeanywhere_login', NULL))) {
+    variable_set('addressfield_lookup_postcodeanywhere_login', $postcodeanywhere_login);
+    variable_del('postcodeanywhere_login');
+  }
+
+  // License.
+  $postcodeanywhere_license = variable_get('postcodeanywhere_license', NULL);
+  if (!is_null($postcodeanywhere_license) && is_null(variable_get('addressfield_lookup_postcodeanywhere_license', NULL))) {
+    variable_set('addressfield_lookup_postcodeanywhere_license', $postcodeanywhere_license);
+    variable_del('postcodeanywhere_license');
+  }
+}

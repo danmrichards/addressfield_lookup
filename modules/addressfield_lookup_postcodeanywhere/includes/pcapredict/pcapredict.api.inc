@@ -183,6 +183,28 @@ abstract class PCAPredict {
   }
 
   /**
+   * Set the data filter.
+   *
+   * @param string $filter
+   *   String containing the required filter.
+   *
+   * @return AddressFieldLookupInterface
+   *   The called object.
+   */
+  public function setFilter($filter) {
+    // Check the filter is valid.
+    if (in_array($filter, $this->allowedFilters)) {
+      $this->filter = $filter;
+    }
+    else {
+      // Not a valid filter.
+      throw new Exception('Requested filter not supported by PCA Predict API.');
+    }
+
+    return $this;
+  }
+
+  /**
    * Set the flag to indicate if API calls be made using https.
    *
    * @param bool $https

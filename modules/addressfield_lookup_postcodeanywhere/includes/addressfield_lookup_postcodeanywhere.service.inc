@@ -44,6 +44,14 @@ class AddressFieldLookupPostcodeAnywhere implements AddressFieldLookupInterface 
     // Get the API result.
     $api_response = $this->api->find($term, $this->lastId);
 
+    // If the API response was an empty array, try one more time with a less
+    // restrictive filter in place. The majority of times the default filter
+    // will work so it's ok to call the API twice in this case.
+    if (empty($api_response)) {
+      $this->api->setFilter('Everything');
+      $api_response = $this->api->find($term, $this->lastId);
+    }
+
     if (!is_array($api_response)) {
       return FALSE;
     }
@@ -110,10 +118,16 @@ class AddressFieldLookupPostcodeAnywhere implements AddressFieldLookupInterface 
     if (!empty($api_response[0]->Street)) {
       $address_details['thoroughfare'] .= $api_response[0]->Street . ' ';
     }
+    elseif (!empty($api_response[0]->Line1)) {
+      $address_details['thoroughfare'] .= $api_response[0]->Line1 . ' ';
+    }
 
     // Thoroughfare: Street 2.
     if (!empty($api_response[0]->SecondaryStreet)) {
       $address_details['thoroughfare'] .= $api_response[0]->SecondaryStreet . ' ';
+    }
+    elseif (!empty($api_response[0]->Line2)) {
+      $address_details['thoroughfare'] .= $api_response[0]->Line2 . ' ';
     }
 
     // Premise: Remove white space.

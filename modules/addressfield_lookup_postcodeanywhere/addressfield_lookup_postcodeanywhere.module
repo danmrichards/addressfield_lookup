@@ -258,9 +258,9 @@ function _addressfield_lookup_postcodeanywhere_addresses_select_validate($elemen
             $first_address_details = addressfield_lookup_get_address_details($addresses[0]['id']);
 
             // Set the common details.
-            $address['locality'] = isset($first_address_details['locality']) ? $first_address_details['locality'] : '';
-            $address['postal_code'] = isset($first_address_details['postal_code']) ? $first_address_details['postal_code'] : $address['postal_code'];
-            $address['administrative_area'] = isset($first_address_details['administrative_area']) ? $first_address_details['administrative_area'] : '';
+            $address['locality'] = !empty($first_address_details['locality']) ? $first_address_details['locality'] : '';
+            $address['postal_code'] = !empty($first_address_details['postal_code']) ? $first_address_details['postal_code'] : $address['postal_code'];
+            $address['administrative_area'] = !empty($first_address_details['administrative_area']) ? $first_address_details['administrative_area'] : '';
 
             // Update the form state, where possible.
             if (isset($address['element_key']) && isset($form_state['addressfield'][$address['element_key']])) {

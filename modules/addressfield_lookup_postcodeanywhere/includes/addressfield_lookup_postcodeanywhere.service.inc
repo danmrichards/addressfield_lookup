@@ -139,24 +139,34 @@ class AddressFieldLookupPostcodeAnywhere implements AddressFieldLookupInterface 
     }
 
     // Locality.
-    $address_details['locality'] = isset($api_response[0]->City) ? $api_response[0]->City : '';
+    $address_details['locality'] = !empty($api_response[0]->City) ? $api_response[0]->City : '';
 
     // Postal code.
-    $address_details['postal_code'] = isset($api_response[0]->PostalCode) ? $api_response[0]->PostalCode : '';
+    $address_details['postal_code'] = !empty($api_response[0]->PostalCode) ? $api_response[0]->PostalCode : '';
 
     // Get the list of administrative areas for the current country.
-    $administrative_areas = $this->getAdministrativeAreas($api_response[0]->CountryIso2);
+    if (!empty($api_response[0]->CountryIso2)) {
+      $administrative_areas = $this->getAdministrativeAreas($api_response[0]->CountryIso2);
+    }
+
+    // Determine the province name from the API result.
+    if (!empty($api_response[0]->Province)) {
+      $province = $api_response[0]->Province;
+    }
+    elseif (!empty($api_response[0]->ProvinceName)) {
+      $province = $api_response[0]->ProvinceName;
+    }
 
     // Administrative area.
-    if (is_array($administrative_areas) && !empty($administrative_areas[$api_response[0]->Province])) {
-      $address_details['administrative_area'] = $administrative_areas[$api_response[0]->Province];
+    if (!empty($administrative_areas) && is_array($administrative_areas) && !empty($administrative_areas[$province])) {
+      $address_details['administrative_area'] = $administrative_areas[$province];
     }
     else {
-      $address_details['administrative_area'] = isset($api_response[0]->Province) ? $api_response[0]->Province : '';
+      $address_details['administrative_area'] = isset($province) ? $province : '';
     }
 
     // Organisation name.
-    $address_details['organisation_name'] = isset($api_response[0]->Company) ? $api_response[0]->Company : '';
+    $address_details['organisation_name'] = !empty($api_response[0]->Company) ? $api_response[0]->Company : '';
 
     return $address_details;
   }

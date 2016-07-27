@@ -144,8 +144,16 @@ class AddressFieldLookupPostcodeAnywhere implements AddressFieldLookupInterface 
     // Postal code.
     $address_details['postal_code'] = isset($api_response[0]->PostalCode) ? $api_response[0]->PostalCode : '';
 
+    // Get the list of administrative areas for the current country.
+    $administrative_areas = $this->getAdministrativeAreas($api_response[0]->CountryIso2);
+
     // Administrative area.
-    $address_details['administrative_area'] = isset($api_response[0]->Province) ? $api_response[0]->Province : '';
+    if (is_array($administrative_areas) && !empty($administrative_areas[$api_response[0]->Province])) {
+      $address_details['administrative_area'] = $administrative_areas[$api_response[0]->Province];
+    }
+    else {
+      $address_details['administrative_area'] = isset($api_response[0]->Province) ? $api_response[0]->Province : '';
+    }
 
     // Organisation name.
     $address_details['organisation_name'] = isset($api_response[0]->Company) ? $api_response[0]->Company : '';
@@ -176,6 +184,34 @@ class AddressFieldLookupPostcodeAnywhere implements AddressFieldLookupInterface 
    */
   public function getLastId() {
     return $this->lastId;
+  }
+
+  /**
+   * Load the list of administrative areas and flip the id/names.
+   *
+   * @param string $country
+   *   String containing the ISO2 code of the country.
+   *
+   * @return array
+   *   Array of administrative areas in the format name => id.
+   *
+   * @see addressfield_get_administrative_areas
+   */
+  private function getAdministrativeAreas($country) {
+    $administrative_areas = &drupal_static(__FUNCTION__);
+
+    if (!isset($administrative_areas)) {
+      // Load the administrative areas for this country.
+      module_load_include('inc', 'addressfield', 'addressfield.administrative_areas');
+      $administrative_areas = addressfield_get_administrative_areas($country);
+
+      // If there is a valid list of administrative areas flip the ids/names.
+      if (is_array($administrative_areas)) {
+        $administrative_areas = array_flip($administrative_areas);
+      }
+    }
+
+    return $administrative_areas;
   }
 
 }

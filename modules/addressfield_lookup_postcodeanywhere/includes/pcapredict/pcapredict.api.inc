@@ -371,4 +371,23 @@ abstract class PCAPredict {
     return is_array($parsed_api_response) ? $parsed_api_response : FALSE;
   }
 
+  /**
+   * Sort find lookup results by their 'Next' value.
+   *
+   * Anything with a 'Find' value needs to be moved higher up the list.
+   *
+   * Callback for usort.
+   */
+  protected function findResultSort($a, $b) {
+    if ($a->Next == $b->Next) {
+      return 0;
+    }
+    elseif ($a->Next === PCAPredict::FIND_OPERATION && $b->Next === PCAPredict::RETRIEVE_OPERATION) {
+      return -1;
+    }
+    else {
+      return 1;
+    }
+  }
+
 }

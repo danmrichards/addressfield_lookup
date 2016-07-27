@@ -48,7 +48,7 @@ class PCAPredictAdapter extends PCAPredict {
     }
 
     // Get the raw API result.
-    $api_response = $this->callApi($this->endpoints['Find'], $params);
+    $api_response = $this->callApi($this->endpoints[PCAPredict::FIND_OPERATION], $params);
 
     // Bail out if there was no response.
     if (!isset($api_response)) {
@@ -56,7 +56,12 @@ class PCAPredictAdapter extends PCAPredict {
     }
 
     // Parse the API repsonse.
-    return $this->parseApiResponse($api_response);
+    $api_response = $this->parseApiResponse($api_response);
+
+    // Sort the results to show any with a 'Find' next value first.
+    usort($api_response, array($this, 'findResultSort'));
+
+    return $api_response;
   }
 
   /**
@@ -76,7 +81,7 @@ class PCAPredictAdapter extends PCAPredict {
     $id_parts = explode(':', $id);
 
     // Get the raw API result.
-    $api_response = $this->callApi($this->endpoints['Retrieve'], array('Id' => $id_parts[0]));
+    $api_response = $this->callApi($this->endpoints[PCAPredict::RETRIEVE_OPERATION], array('Id' => $id_parts[0]));
 
     // Bail out if there was no response.
     if (!isset($api_response)) {

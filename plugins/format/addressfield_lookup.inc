@@ -57,9 +57,9 @@ function addressfield_lookup_addressfield_format_generate(&$format, &$address, $
             $address['addressfield_lookup_mode'] = 'address_selection';
           }
         }
-        elseif (!empty($address['postal_code']) && !empty($address['thoroughfare'])) {
+        elseif ((!empty($address['postal_code']) && !empty($address['thoroughfare'])) || !empty(form_get_errors())) {
           // If we have a postcode and thoroughfare we're most likely editing
-          // an existing address.
+          // an existing address. Or there could be errors on the form.
           $address['addressfield_lookup_mode'] = 'address_selected';
         }
         else {

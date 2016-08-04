@@ -77,7 +77,6 @@ function addressfield_lookup_addressfield_format_generate(&$format, &$address, $
             '#type' => 'textfield',
             '#title' => t('House number or name'),
             '#default_value' => !empty($address['addressfield_lookup_house_number']) ? $address['addressfield_lookup_house_number'] : '',
-            '#element_validate' => array('addressfield_lookup_addressfield_house_number_validate'),
             '#weight' => $format['country']['#weight'] + 1,
             '#size' => 30,
           );
@@ -199,47 +198,6 @@ function addressfield_lookup_addressfield_format_generate(&$format, &$address, $
 }
 
 /**
- * Validate callback for the house number input element.
- */
-function addressfield_lookup_addressfield_house_number_validate($element, &$form_state, &$form) {
-  // Check there is a value to validate.
-  if (!empty($element['#value'])) {
-    // Get the address element from the form.
-    $array_parents = array_slice($element['#parents'], 0, -1);
-    $address = drupal_array_get_nested_value($form_state['values'], $array_parents);
-
-    // Get the matching addresses.
-    $addresses = addressfield_lookup_get_addresses($address['addressfield_lookup_postal_code'], $address['country']);
-
-    // Only validate if there are addresses.
-    if (!empty($addresses)) {
-      $validate = FALSE;
-
-      // Prepare list options from the lookup results.
-      $address_options = _addressfield_lookup_prepare_options($addresses);
-
-      // Search in addresses for the house number data and return the first
-      // matched address.
-      foreach ($address_options as $address_id => $address_description) {
-        // The house number is valid.
-        if (stristr($address_description, $element['#value'])) {
-          // Set the validate flag to true and populate the address.
-          $validate = TRUE;
-          _addressfield_lookup_populate_addressfield($address_id, $element, $form_state);
-
-          break;
-        }
-      }
-
-      // Show an error if the validation failed.
-      if (!$validate) {
-        form_set_error(implode('][', $element['#array_parents']), t('The house number or name is not correct for this postal code. Please try another.'));
-      }
-    }
-  }
-}
-
-/**
  * Validate callback for the postal code input element.
  */
 function addressfield_lookup_addressfield_postal_code_validate($element, &$form_state, &$form) {
@@ -249,12 +207,23 @@ function addressfield_lookup_addressfield_postal_code_validate($element, &$form_
     $array_parents = array_slice($element['#parents'], 0, -1);
     $address = drupal_array_get_nested_value($form_state['values'], $array_parents);
 
+    // Build an array of search terms.
+    $search_terms = array();
+
+    // Add the house number value if populated.
+    if (!empty($address['addressfield_lookup_house_number'])) {
+      $search_terms[] = $address['addressfield_lookup_house_number'];
+    }
+
+    // We always need the postcode.
+    $search_terms[] = $element['#value'];
+
     // Perform an address lookup for this postcode.
-    $addresses = addressfield_lookup_get_addresses($element['#value'], $address['country']);
+    $addresses = addressfield_lookup_get_addresses(implode(', ', $search_terms), $address['country']);
 
     // Show an error if we have no results.
     if (empty($addresses)) {
-      form_set_error(implode('][', $element['#array_parents']), t('Unfortunately there are no matching addresses for this postal code. Please try another.'));
+      form_set_error(implode('][', $element['#array_parents']), t('Unfortunately there are no addresses matching your seach. Perhaps try without the house number or try a different postcode.'));
     }
     else {
       // Get the address element from the form.

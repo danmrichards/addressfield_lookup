@@ -88,42 +88,10 @@ class AddressFieldLookupPostcodeAnywhere implements AddressFieldLookupInterface 
     }
 
     // Premise.
-    $address_details['premise'] = '';
+    $address_details['premise'] = !empty($api_response[0]->BuildingName) ? $api_response[0]->BuildingName : '';
 
-    // Premise: Check for building number.
-    if (!empty($api_response[0]->BuildingNumber)) {
-      $address_details['premise'] .= $api_response[0]->BuildingNumber . ' ';
-    }
-
-    // Premise: Check for building name.
-    if (!empty($api_response[0]->BuildingName)) {
-      $address_details['premise'] .= $api_response[0]->BuildingName . ' ';
-    }
-
-    // Premise: Remove white space.
-    $address_details['premise'] = trim($address_details['premise']);
-
-    // Thoroughfare.
-    $address_details['thoroughfare'] = '';
-
-    // Thoroughfare: Street 1.
-    if (!empty($api_response[0]->Street)) {
-      $address_details['thoroughfare'] .= $api_response[0]->Street . ' ';
-    }
-    elseif (!empty($api_response[0]->Line1)) {
-      $address_details['thoroughfare'] .= $api_response[0]->Line1 . ' ';
-    }
-
-    // Thoroughfare: Street 2.
-    if (!empty($api_response[0]->SecondaryStreet)) {
-      $address_details['thoroughfare'] .= $api_response[0]->SecondaryStreet . ' ';
-    }
-    elseif (!empty($api_response[0]->Line2)) {
-      $address_details['thoroughfare'] .= $api_response[0]->Line2 . ' ';
-    }
-
-    // Premise: Remove white space.
-    $address_details['thoroughfare'] = trim($address_details['thoroughfare']);
+    // Parse the thoroughfare from the result array.
+    $address_details['thoroughfare'] = !empty($api_response[0]) ? $this->api->getAddressThoroughfare($api_response[0]) : '';
 
     // Dependent locality: Administrative area.
     if (!empty($api_response[0]->AdminAreaName)) {

@@ -111,4 +111,37 @@ class PCAPredictAdapter extends PCAPredict {
     return $this->parseApiResponse($api_response);
   }
 
+  /**
+   * Parses an address and returns the thoroughfare value.
+   *
+   * The PCAPredict API repsonse is not consistent for thoroughfare value, it
+   * varies depending on the country being searched in.
+   *
+   * @param object $address
+   *   Address details from the PCAPredict retrieve API.
+   *
+   * @return string
+   *   The thoroughfare from the address.
+   *
+   * @see http://www.pcapredict.com/support/webservice/captureplus/interactive/retrieve/2.1/
+   */
+  public function getAddressThoroughfare($address) {
+    // First attempt to use the street values.
+    $thoroughfare = array_filter(array(
+      $address->BuildingNumber,
+      $address->Street,
+      $address->SecondaryStreet,
+    ));
+
+    // If we don't have any values, fall back and try to use the LineX values.
+    if (empty($thoroughfare)) {
+      $thoroughfare = array_filter(array(
+        $address->Line1,
+        $address->Line2,
+      ));
+    }
+
+    return implode(' ', $thoroughfare);
+  }
+
 }

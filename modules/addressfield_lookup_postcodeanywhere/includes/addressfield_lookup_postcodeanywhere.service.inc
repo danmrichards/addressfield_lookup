@@ -93,13 +93,13 @@ class AddressFieldLookupPostcodeAnywhere implements AddressFieldLookupInterface 
     // Parse the thoroughfare from the result array.
     $address_details['thoroughfare'] = !empty($api_response[0]) ? $this->api->getAddressThoroughfare($api_response[0]) : '';
 
-    // Dependent locality: Administrative area.
-    if (!empty($api_response[0]->AdminAreaName)) {
-      $address_details['dependent_locality'] = $api_response[0]->AdminAreaName;
-    }
-
     // Locality.
     $address_details['locality'] = !empty($api_response[0]->City) ? $api_response[0]->City : '';
+
+    // Dependent locality: Administrative area.
+    if (!empty($api_response[0]->AdminAreaName) && $api_response[0]->AdminAreaName != $api_response[0]->City) {
+      $address_details['dependent_locality'] = $api_response[0]->AdminAreaName;
+    }
 
     // Postal code.
     $address_details['postal_code'] = !empty($api_response[0]->PostalCode) ? $api_response[0]->PostalCode : '';

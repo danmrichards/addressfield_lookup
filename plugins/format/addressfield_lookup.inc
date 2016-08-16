@@ -113,7 +113,7 @@ function addressfield_lookup_addressfield_format_generate(&$format, &$address, $
             '#type' => 'submit',
             '#name' => $element_key . '-addressfield_lookup_cancel',
             '#id' => $element_key . '-addressfield_lookup_cancel',
-            '#value' => t('Do not know the postcode'),
+            '#value' => t('Enter address manually'),
             '#executes_submit_callback' => FALSE,
             '#element_validate' => array('addressfield_lookup_addressfield_cancel_search_validate'),
             '#ajax' => array(
@@ -374,7 +374,7 @@ function _addressfield_lookup_search_by_postal_code_button(&$format, $element_ke
       'wrapper' => $format['#wrapper_id'],
     ),
     '#limit_validation_errors' => array(),
-    '#weight' => $format['country']['#weight'] + 1,
+    '#weight' => $format['country']['#weight'] - 1,
     '#attributes' => array('class' => array('search-by-postal-code')),
   );
 }

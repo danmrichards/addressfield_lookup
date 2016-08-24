@@ -59,13 +59,13 @@ function addressfield_lookup_postcodeanywhere_create($service_info, $country = '
   $postcode_anywhere_service = &drupal_static(__FUNCTION__);
 
   // Check the postcode anywhere configuration variables exist.
-  if (!variable_get('addressfield_lookup_postcodeanywhere_license', NULL)) {
+  if (!variable_get('addressfield_lookup_postcodeanywhere_license', FALSE)) {
     throw new Exception('Postcode Anywhere has not been configured.');
   }
 
   // Instantiate the API class.
   if (!isset($postcode_anywhere_service[$country])) {
-    $pca_predict = new PCAPredictAdapter(variable_get('addressfield_lookup_postcodeanywhere_license', NULL), variable_get('addressfield_lookup_postcodeanywhere_login', NULL), $language->name, 'Everything', $country);
+    $pca_predict = new PCAPredictAdapter(variable_get('addressfield_lookup_postcodeanywhere_license', FALSE), variable_get('addressfield_lookup_postcodeanywhere_login', FALSE), $language->name, 'Everything', $country);
     $postcode_anywhere_service[$country] = new $service_info['class']($pca_predict);
   }
 
@@ -322,12 +322,12 @@ function _addressfield_lookup_postcodeanywhere_get_countries($reset = FALSE) {
   }
 
   // Check the postcode anywhere configuration variables exist.
-  if (!variable_get('addressfield_lookup_postcodeanywhere_license', NULL)) {
+  if (!variable_get('addressfield_lookup_postcodeanywhere_license', FALSE)) {
     throw new Exception('Postcode Anywhere has not been configured.');
   }
 
   // Get the API wrapper.
-  $pca_predict = new PCAPredictAdapter(variable_get('addressfield_lookup_postcodeanywhere_license', NULL), variable_get('addressfield_lookup_postcodeanywhere_login', NULL), $language->name);
+  $pca_predict = new PCAPredictAdapter(variable_get('addressfield_lookup_postcodeanywhere_license', FALSE), variable_get('addressfield_lookup_postcodeanywhere_login', FALSE), $language->name);
 
   // Get and parse the countries list.
   $api_countries = $pca_predict->getCountryData();

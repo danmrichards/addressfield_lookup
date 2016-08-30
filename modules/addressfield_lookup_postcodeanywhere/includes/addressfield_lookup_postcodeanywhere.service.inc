@@ -88,10 +88,19 @@ class AddressFieldLookupPostcodeAnywhere implements AddressFieldLookupInterface 
     }
 
     // Premise.
-    $address_details['premise'] = !empty($api_response[0]->BuildingName) ? $api_response[0]->BuildingName : '';
+    $address_details['premise'] = '';
+    $building_thoroughfare_component = 'BuildingNumber';
+
+    if (!empty($api_response[0]->BuildingName)) {
+      $address_details['premise'] = $api_response[0]->BuildingName;
+    }
+    elseif (!empty($api_response[0]->BuildingNumber)) {
+      $address_details['premise'] = $api_response[0]->BuildingNumber;
+      $building_thoroughfare_component = 'BuildingName';
+    }
 
     // Parse the thoroughfare from the result array.
-    $address_details['thoroughfare'] = !empty($api_response[0]) ? $this->api->getAddressThoroughfare($api_response[0]) : '';
+    $address_details['thoroughfare'] = !empty($api_response[0]) ? $this->api->getAddressThoroughfare($api_response[0], $building_thoroughfare_component) : '';
 
     // Locality.
     $address_details['locality'] = !empty($api_response[0]->City) ? $api_response[0]->City : '';

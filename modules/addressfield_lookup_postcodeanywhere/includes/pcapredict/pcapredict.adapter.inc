@@ -119,16 +119,19 @@ class PCAPredictAdapter extends PCAPredict {
    *
    * @param object $address
    *   Address details from the PCAPredict retrieve API.
+   * @param string $building_thoroughfare_component
+   *   Name of an address result field, related to the Building, which should
+   *   be used as part of the thoroughfare.
    *
    * @return string
    *   The thoroughfare from the address.
    *
    * @see http://www.pcapredict.com/support/webservice/captureplus/interactive/retrieve/2.1/
    */
-  public function getAddressThoroughfare($address) {
+  public function getAddressThoroughfare($address, $building_thoroughfare_component = 'BuildingNumber') {
     // First attempt to use the street values.
     $thoroughfare = array_filter(array(
-      $address->BuildingNumber,
+      $address->{$building_thoroughfare_component},
       $address->Street,
       $address->SecondaryStreet,
     ));
